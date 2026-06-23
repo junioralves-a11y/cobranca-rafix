@@ -38,9 +38,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13
 .import-btn{background:var(--primary);color:#fff;border:none;padding:0 16px;height:34px;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;white-space:nowrap;font-family:var(--font)}
 .import-btn:hover{background:var(--primary-hover)}
 #fileInput{display:none}
-.sync-btn{background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:6px;padding:0 12px;height:34px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;font-family:var(--font)}
-.sync-btn:hover{border-color:var(--primary);color:var(--primary)}
-.sync-btn.loading{opacity:.6;pointer-events:none}
+
 
 /* TABS */
 .tabs-bar{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex}
@@ -77,16 +75,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13
 .bases-info{font-size:11px;color:var(--text-muted);padding:0 4px}
 
 /* SCROLL */
-.scroll-area{flex:1;overflow-y:auto;padding:12px 24px 32px}
+.scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 24px 32px;min-width:0}
 
 /* TABLE */
-.table-container{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden}
-table{width:100%;border-collapse:collapse;font-size:12.5px}
-thead th{background:#F8FAFC;color:var(--text-muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:5}
+.table-container{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:auto;width:100%}
+table{border-collapse:collapse;font-size:11.5px;min-width:1300px;width:max-content}
+thead th{background:#F8FAFC;color:var(--text-muted);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:5}
 tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:#F8FAFC}
-td{padding:10px 14px;vertical-align:middle}
+td{padding:8px 10px;vertical-align:middle;white-space:nowrap}
 
 /* BADGES */
 .status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;border:1px solid}
@@ -103,10 +101,10 @@ td{padding:10px 14px;vertical-align:middle}
 .atraso-badge.red{background:var(--red-bg);color:#DC2626}.atraso-badge.none{color:var(--text-light)}
 .valor{font-variant-numeric:tabular-nums;font-weight:600;font-size:12px}
 .valor.aberto{color:#B45309}.val-zero{color:var(--text-light)}
-.client-name{font-weight:600;color:var(--text)}.rep-name{font-size:11px;color:var(--text-muted);margin-top:1px}
+.client-name{font-weight:600;color:var(--text);max-width:160px;overflow:hidden;text-overflow:ellipsis;display:block}.rep-name{font-size:11px;color:var(--text-muted);margin-top:1px;max-width:140px;overflow:hidden;text-overflow:ellipsis;display:block}
 
 /* PARECER */
-.parecer-cell{min-width:260px;max-width:340px}
+.parecer-cell{min-width:220px;max-width:320px;white-space:normal!important}
 .parecer-readonly{font-size:12px;color:var(--text-muted);line-height:1.45;white-space:normal;max-width:300px}
 .parecer-none{color:var(--text-light);font-style:italic;font-size:12px}
 .parecer-wrap{display:flex;align-items:center;gap:6px}
@@ -161,6 +159,33 @@ td{padding:10px 14px;vertical-align:middle}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:#A0AEC0}
 .no-results td{text-align:center;padding:40px;color:var(--text-muted);font-size:13px}
+
+/* MULTISELECT */
+.ms-wrap{position:relative;display:inline-block}
+.ms-trigger{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:5px 28px 5px 10px;font-size:12px;color:var(--text);cursor:pointer;white-space:nowrap;min-width:140px;text-align:left;font-family:var(--font);transition:border-color .15s;position:relative}
+.ms-trigger:hover{border-color:var(--primary)}
+.ms-trigger.active-filter{border-color:var(--primary);background:var(--primary-light);color:var(--primary);font-weight:600}
+.ms-trigger::after{content:'▾';position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--text-muted)}
+.ms-dropdown{position:absolute;top:calc(100% + 4px);left:0;min-width:220px;max-width:320px;background:var(--white);border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow);z-index:500;display:none;flex-direction:column;max-height:260px;overflow:hidden}
+.ms-dropdown.open{display:flex}
+.ms-search{padding:8px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.ms-search input{width:100%;border:1px solid var(--border);border-radius:5px;padding:5px 8px;font-size:12px;outline:none;font-family:var(--font);color:var(--text)}
+.ms-search input:focus{border-color:var(--primary)}
+.ms-list{overflow-y:auto;flex:1}
+.ms-item{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;font-size:12px;transition:background .1s}
+.ms-item:hover{background:var(--bg)}
+.ms-item input[type=checkbox]{accent-color:var(--primary);width:14px;height:14px;flex-shrink:0}
+.ms-item label{cursor:pointer;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-footer{padding:6px 10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-shrink:0}
+.ms-clear{background:none;border:none;font-size:11px;color:var(--text-muted);cursor:pointer;font-family:var(--font)}
+.ms-clear:hover{color:var(--red)}
+.ms-count{font-size:11px;color:var(--primary);font-weight:600}
+
+/* RECORRENCIA */
+.recorr-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;margin-right:4px;flex-shrink:0}
+.recorr-badge.low{background:#FEF3C7;color:#92400E}
+.recorr-badge.mid{background:#FEE2E2;color:#991B1B}
+.recorr-badge.high{background:#991B1B;color:#fff}
 </style>
 </head>
 <body>
@@ -180,9 +205,7 @@ td{padding:10px 14px;vertical-align:middle}
       <div class="base-badge" id="baseBadge" style="display:none">
         📅 Base: <span id="baseDateText">—</span>
       </div>
-      <button class="sync-btn" id="syncBtn" onclick="syncFromSheets()" style="display:none">
-        ↻ Sincronizar
-      </button>
+
       <button class="import-btn" onclick="document.getElementById('fileInput').click()">
         ↑ Importar Excel
       </button>
@@ -253,8 +276,10 @@ let S = {
   statusFilter: 'TODOS',
   periodFilter: 3,
   search: '',
-  allImports: [],  // [{baseDate, importDate, rows:[]}]
-  pareceres: {},   // rowKey → [{texto, data, baseDate}]
+  clientFilter: [],      // multiselect clientes
+  repFilter: [],         // multiselect representantes
+  allImports: [],
+  pareceres: {},
 };
 
 // ══════════════════════════════════════════════════════
@@ -297,9 +322,14 @@ function rowKey(r) { return [r.emp,r.doc,r.titulo,r.parc].join('|'); }
 
 function excelToDate(serial) {
   if (!serial || isNaN(serial)) return null;
-  const d = new Date(Math.round((serial - 25569) * 86400000));
-  d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
-  return d;
+  // Converte serial do Excel para data sem problemas de fuso
+  const days = Math.floor(serial - 25569);
+  const d = new Date(days * 86400000);
+  // Extrai dia/mês/ano em UTC para evitar fuso horário
+  const day   = String(d.getUTCDate()).padStart(2,'0');
+  const month = String(d.getUTCMonth()+1).padStart(2,'0');
+  const year  = d.getUTCFullYear();
+  return day + '/' + month + '/' + year;
 }
 
 function fmtDate(d) {
@@ -390,6 +420,21 @@ function pagosRows(days) {
 // ══════════════════════════════════════════════════════
 // IMPORT EXCEL
 // ══════════════════════════════════════════════════════
+
+// Normaliza qualquer formato de data para DD/MM/YYYY
+function normDate(raw) {
+  if (!raw) return '';
+  const s = String(raw).trim();
+  if (s.match(/^\d{2}\/\d{2}\/\d{4}$/)) return s;
+  const d = new Date(s);
+  if (!isNaN(d)) {
+    return String(d.getDate()).padStart(2,'0') + '/' +
+           String(d.getMonth()+1).padStart(2,'0') + '/' +
+           d.getFullYear();
+  }
+  return '';
+}
+
 function handleFile(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -470,8 +515,14 @@ function parseAndSave(raw, filename, baseDate) {
     const vlrAb = parseFloat(String(r[iVlrAb]??0).replace(',','.'))||0;
     if (vlrAb<=0) continue;
 
-    const vctoDate = excelToDate(r[iVcto]);
+    const vctoDateStr = excelToDate(r[iVcto]); // retorna DD/MM/YYYY
     const emisDate = excelToDate(r[iEmis]);
+    // Converte string DD/MM/YYYY → Date para getStatus funcionar
+    let vctoDate = null;
+    if (vctoDateStr && vctoDateStr !== '—') {
+      const [dv,mv,yv] = vctoDateStr.split('/');
+      if (dv && mv && yv) vctoDate = new Date(+yv, +mv-1, +dv);
+    }
 
     const row = {
       emp:       String(r[iEmp]??''). trim(),
@@ -481,7 +532,7 @@ function parseAndSave(raw, filename, baseDate) {
       cliente:   iNome1!==-1 ? String(r[iNome1]??''). trim() : '',
       rep:       iNome2!==-1 ? String(r[iNome2]??''). trim() : '',
       _vcto:     vctoDate,
-      _vctoStr:  fmtDate(vctoDate),
+      _vctoStr:  vctoDateStr || '—',
       atraso:    parseInt(r[iAtraso])||0,
       vlrTit:    parseFloat(String(r[iVlrTit]??0).replace(',','.'))||0,
       vlrPago:   parseFloat(String(r[iVlrPago]??0).replace(',','.'))||0,
@@ -544,98 +595,122 @@ function parseAndSave(raw, filename, baseDate) {
   S.allImports = S.allImports.slice(-30);
 
   markPaid();
-  saveLocal();
 
-  // Atualiza header
+  // Atualiza header imediatamente
   document.getElementById('headerSub').textContent =
     filename + ' · Importado em ' + todayStr() + ' · ' + newRows.length + ' títulos';
   document.getElementById('baseDateText').textContent = baseDate;
   document.getElementById('baseBadge').style.display = 'flex';
-  if (WEB_APP_URL) document.getElementById('syncBtn').style.display = 'flex';
 
-  // Salva lista no Sheets em background
+  // Renderiza já com dados locais enquanto busca do Sheets
+  renderAll();
+  showToast('Carregando ' + newRows.length + ' títulos... buscando pareceres', 'info');
+
   if (WEB_APP_URL) {
-    fetch(WEB_APP_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'saveLista', baseDate, rows: rawRowsForSheets })
-    }).then(() => showToast(newRows.length + ' títulos carregados e salvos no Sheets · Base: ' + baseDate, 'success'))
-      .catch(() => showToast(newRows.length + ' títulos carregados (Sheets offline) · Base: ' + baseDate, 'success'));
+    // Salva lista e busca pareceres em paralelo
+    Promise.all([
+      // Salva lista completa no Sheets
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'saveLista', baseDate, rows: rawRowsForSheets })
+      }).catch(e => console.warn('saveLista:', e)),
+
+      // Busca pareceres existentes no Sheets
+      fetch(WEB_APP_URL + '?action=getPareceres')
+        .then(r => r.json())
+        .catch(e => { console.warn('getPareceres:', e); return {pareceres:[]}; })
+    ]).then(function(results) {
+      const resPareceres = results[1];
+
+      if (resPareceres.pareceres && resPareceres.pareceres.length) {
+        resPareceres.pareceres.forEach(function(p) {
+          if (!p.parecer) return;
+          const k = p.key;
+          if (!S.pareceres[k]) S.pareceres[k] = [];
+
+          // Normaliza datas vindas do Sheets
+          const bd = normDate(p.baseDate);
+          const dt = normDate(p.data) || bd;
+
+          // Deduplicação por baseDate — 1 parecer por base por título
+          const existe = S.pareceres[k].some(h => h.baseDate === bd);
+          if (!existe && bd) {
+            S.pareceres[k].push({ texto: p.parecer, data: dt, baseDate: bd });
+          }
+        });
+      }
+
+      saveLocal();
+      renderAll();
+      showToast(newRows.length + ' títulos carregados · Base: ' + baseDate, 'success');
+    });
   } else {
+    saveLocal();
     showToast(newRows.length + ' títulos carregados · Base: ' + baseDate, 'success');
   }
-
-  renderAll();
 }
 
 // ══════════════════════════════════════════════════════
 // SYNC DO SHEETS
 // ══════════════════════════════════════════════════════
-async function syncFromSheets() {
-  if (!WEB_APP_URL) { showToast('Configure a URL do Apps Script primeiro.', 'error'); return; }
-  const btn = document.getElementById('syncBtn');
-  btn.classList.add('loading');
-  btn.textContent = '↻ Sincronizando...';
-  showToast('Buscando dados do Sheets...', 'info');
-
+async function fetchParecerFromSheets(key, baseDate) {
+  // Busca pareceres existentes no Sheets para um título específico
+  if (!WEB_APP_URL) return;
   try {
-    // Busca listas e pareceres em paralelo
-    const [resListas, resPareceres] = await Promise.all([
-      fetch(WEB_APP_URL + '?action=getListas').then(r => r.json()),
-      fetch(WEB_APP_URL + '?action=getPareceres').then(r => r.json()),
-    ]);
-
-    // Reconstrói allImports a partir das listas do Sheets
-    if (resListas.listas) {
-      S.allImports = [];
-      Object.entries(resListas.listas).forEach(([baseDate, rows]) => {
-        const parsed = rows.map(r => ({
-          emp: r.emp, doc: r.doc, titulo: r.titulo, parc: r.parc,
-          cliente: r.cliente, rep: r.rep,
-          _vctoStr: r.vcto, atraso: r.atraso,
-          vlrTit: r.vlrTit, vlrPago: r.vlrPago, vlrAberto: r.vlrAberto,
-          _paid: false, _baseDate: baseDate, _importDate: r.importDate || baseDate,
-        }));
-        parsed.forEach(rebuildDate);
-        S.allImports.push({ baseDate, importDate: todayStr(), rows: parsed });
-      });
-      S.allImports = S.allImports.slice(-30);
-    }
-
-    // Reconstrói pareceres
-    if (resPareceres.pareceres) {
-      S.pareceres = {};
-      resPareceres.pareceres.forEach(p => {
-        if (!S.pareceres[p.key]) S.pareceres[p.key] = [];
-        // Evita duplicata
-        if (!S.pareceres[p.key].some(h => h.data===p.data && h.baseDate===p.baseDate)) {
-          S.pareceres[p.key].push({ texto: p.parecer, data: p.data || p.baseDate, baseDate: p.baseDate });
+    const url = WEB_APP_URL + '?action=getPareceres&key=' + encodeURIComponent(key) + '&baseDate=' + encodeURIComponent(baseDate);
+    const res = await fetch(url).then(r => r.json());
+    if (res.pareceres && res.pareceres.length) {
+      res.pareceres.forEach(function(p) {
+        if (!p.parecer) return;
+        const k = p.key;
+        if (!S.pareceres[k]) S.pareceres[k] = [];
+        const bd = normDate(p.baseDate);
+        const dr = normDate(p.data) || bd;
+        if (!S.pareceres[k].some(h => h.baseDate === bd)) {
+          S.pareceres[k].push({ texto: p.parecer, data: dr, baseDate: bd });
         }
       });
     }
-
-    markPaid();
-    saveLocal();
-
-    // Atualiza header com última base
-    if (S.allImports.length) {
-      const sorted = [...S.allImports].sort((a,b) => (parseBR(b.baseDate)||0)-(parseBR(a.baseDate)||0));
-      const last = sorted[0];
-      document.getElementById('headerSub').textContent =
-        'Sincronizado · Última base: ' + last.baseDate + ' · ' + last.rows.length + ' títulos';
-      document.getElementById('baseDateText').textContent = last.baseDate;
-      document.getElementById('baseBadge').style.display = 'flex';
-    }
-
-    renderAll();
-    showToast('Sincronizado com Sheets!', 'success');
-  } catch(err) {
-    showToast('Erro ao sincronizar: ' + err.message, 'error');
-  } finally {
-    btn.classList.remove('loading');
-    btn.textContent = '↻ Sincronizar';
-  }
+  } catch(e) { console.warn('fetchPareceres:', e); }
 }
 
+async function loadAllPareceres() {
+  // Busca todos os pareceres do Sheets ao importar uma base
+  if (!WEB_APP_URL) return;
+  try {
+    const res = await fetch(WEB_APP_URL + '?action=getPareceres').then(r => r.json());
+    if (res.pareceres && res.pareceres.length) {
+      res.pareceres.forEach(function(p) {
+        if (!p.parecer) return;
+        const k = p.key;
+        if (!S.pareceres[k]) S.pareceres[k] = [];
+        const bd = normDate(p.baseDate);
+        const dr = normDate(p.data) || bd;
+        // Deduplicação: mesma chave + mesma baseDate = atualiza, não duplica
+        const idx = S.pareceres[k].findIndex(h => h.baseDate === bd);
+        if (idx !== -1) {
+          S.pareceres[k][idx] = { texto: p.parecer, data: dr, baseDate: bd };
+        } else {
+          S.pareceres[k].push({ texto: p.parecer, data: dr, baseDate: bd });
+        }
+      });
+      saveLocal();
+    }
+  } catch(e) { console.warn('loadAllPareceres:', e); }
+}
+
+function normDate(raw) {
+  if (!raw) return '';
+  const s = String(raw).trim();
+  if (s.match(/^\d{2}\/\d{2}\/\d{4}$/)) return s;
+  const d = new Date(s);
+  if (!isNaN(d)) {
+    return String(d.getDate()).padStart(2,'0') + '/' +
+           String(d.getMonth()+1).padStart(2,'0') + '/' +
+           d.getFullYear();
+  }
+  return s;
+}
 // ══════════════════════════════════════════════════════
 // RENDER
 // ══════════════════════════════════════════════════════
@@ -729,15 +804,22 @@ function updateToolbar() {
     .sort((a,b)=>(parseBR(b.baseDate)||0)-(parseBR(a.baseDate)||0))
     .map(i=>i.baseDate).join(', ');
 
+  // Coleta clientes e representantes únicos
+  const allRows = geralRows(30);
+  const clientes = [...new Set(allRows.map(r => r.cliente).filter(Boolean))];
+  const reps     = [...new Set(allRows.map(r => r.rep).filter(Boolean))];
+
   ta.innerHTML = `
     <div class="filter-group">${docBtns}</div>
     <div class="filter-group">${statusBtns}</div>
     ${periodBtns}
+    ${buildMsDropdown('client', clientes)}
+    ${buildMsDropdown('rep', reps)}
     <span class="bases-info">Bases: ${bases}</span>
     <div class="toolbar-spacer"></div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Buscar cliente ou representante..."
+      <input type="text" placeholder="Buscar..."
         value="${esc(S.search)}"
         oninput="S.search=this.value;renderTable()">
     </div>`;
@@ -753,6 +835,8 @@ function renderTable() {
   const filtered = rows.filter(row => {
     if (S.docFilter!=='TODOS' && row.doc!==S.docFilter) return false;
     if (S.statusFilter!=='TODOS' && getStatus(row)!==S.statusFilter) return false;
+    if (S.clientFilter.length && !S.clientFilter.includes(row.cliente)) return false;
+    if (S.repFilter.length && !S.repFilter.includes(row.rep)) return false;
     if (S.search) {
       if (!(row.cliente+row.rep+row.titulo).toLowerCase().includes(S.search.toLowerCase())) return false;
     }
@@ -768,8 +852,8 @@ function renderTable() {
   const isPagos = S.tab==='pagos';
 
   // thead
-  let thCols = '<th>Status</th><th>Doc.</th><th>Título/Parc.</th><th>Cliente</th><th>Representante</th><th>Base</th><th>Vencimento</th><th>Atraso</th><th>Vlr Título</th><th>Vlr Pago</th><th>Vlr Aberto</th><th>Parecer</th><th>Hist.</th>';
-  if (isPagos) thCols = '<th>Doc.</th><th>Título/Parc.</th><th>Cliente</th><th>Representante</th><th>Base</th><th>Vencimento</th><th>Vlr Aberto</th><th>Último Parecer</th><th>Hist.</th>';
+  let thCols = '<th>Status</th><th>Doc.</th><th>Título/Parc.</th><th>Cliente</th><th>Representante</th><th>Vencimento</th><th>Atraso</th><th>Vlr Título</th><th>Vlr Pago</th><th>Vlr Aberto</th><th>Base</th><th>Parecer</th><th>Hist.</th>';
+  if (isPagos) thCols = '<th>Doc.</th><th>Título/Parc.</th><th>Cliente</th><th>Representante</th><th>Vencimento</th><th>Vlr Aberto</th><th>Base</th><th>Último Parecer</th><th>Hist.</th>';
   document.getElementById('tableHead').innerHTML = `<tr>${thCols}</tr>`;
 
   if (!filtered.length) {
@@ -786,7 +870,7 @@ function renderTable() {
     const k    = rowKey(row);
     const hist = S.pareceres[k]||[];
     const lastParecer  = hist.length ? hist[hist.length-1] : null;
-    const todayParecer = hist.find(h => h.data===td);
+    const todayParecer = hist.find(h => h.baseDate === row._baseDate);
 
     const stBadge  = `<span class="status-badge ${st}"><span class="status-dot ${st}"></span>${statusLabel(st)}</span>`;
     const docBadge = `<span class="doc-badge ${row.doc}">${esc(row.doc)}</span>`;
@@ -803,13 +887,17 @@ function renderTable() {
             <span style="font-size:10px;color:var(--text-light)">${lastParecer.data} · Base ${lastParecer.baseDate||'—'}</span></div>`
         : '<span class="parecer-none">Sem parecer</span>';
     } else if (todayParecer) {
+      const recNS = getRecorrencia(row.cliente);
       parecerHtml = `<div class="parecer-wrap">
+        ${recorrBadge(recNS)}
         <span class="parecer-readonly" style="flex:1">${esc(todayParecer.texto)}</span>
         <button class="edit-btn" onclick="editParecer(${idx})">✎</button>
       </div>`;
     } else {
       const ph = lastParecer ? esc(lastParecer.texto) : 'Registrar parecer...';
+      const recN = getRecorrencia(row.cliente);
       parecerHtml = `<div class="parecer-wrap">
+        ${recorrBadge(recN)}
         <input class="parecer-input" id="inp_${idx}" type="text" placeholder="${ph}"
           onkeydown="if(event.key==='Enter')saveParecer(${idx})">
         <button class="save-btn" onclick="saveParecer(${idx})">Salvar</button>
@@ -826,9 +914,9 @@ function renderTable() {
         <td style="color:var(--text-muted)">${esc(row.titulo)} / ${esc(row.parc)}</td>
         <td><div class="client-name">${esc(row.cliente)}</div></td>
         <td><div class="rep-name">${esc(row.rep)}</div></td>
-        <td>${baseChip}</td>
         <td style="${vctoColor};font-weight:500">${row._vctoStr||'—'}</td>
         <td class="valor aberto">${fmtMoney(row.vlrAberto)}</td>
+        <td>${baseChip}</td>
         <td class="parecer-cell">${parecerHtml}</td>
         <td>${histHtml}</td>
       </tr>`;
@@ -840,12 +928,12 @@ function renderTable() {
       <td style="color:var(--text-muted)">${esc(row.titulo)} / ${esc(row.parc)}</td>
       <td><div class="client-name">${esc(row.cliente)}</div></td>
       <td><div class="rep-name">${esc(row.rep)}</div></td>
-      <td>${baseChip}</td>
       <td style="${vctoColor};font-weight:500">${row._vctoStr||'—'}</td>
       <td>${atrasoHtml}</td>
       <td class="valor">${fmtMoney(row.vlrTit)}</td>
       <td>${vlrPagoHtml}</td>
       <td class="valor aberto">${fmtMoney(row.vlrAberto)}</td>
+      <td>${baseChip}</td>
       <td class="parecer-cell">${parecerHtml}</td>
       <td>${histHtml}</td>
     </tr>`;
@@ -862,40 +950,54 @@ function saveParecer(idx) {
   const texto = input.value.trim();
   if (!texto) { showToast('Digite um parecer antes de salvar.', 'error'); return; }
 
-  const k=rowKey(row), td=todayStr();
-  if (!S.pareceres[k]) S.pareceres[k]=[];
-  const ei = S.pareceres[k].findIndex(h=>h.data===td && h.baseDate===row._baseDate);
-  const reg = {texto, data:td, baseDate:row._baseDate||'—'};
-  if (ei!==-1) S.pareceres[k][ei]=reg; else S.pareceres[k].push(reg);
+  const k = rowKey(row);
+  const bd = row._baseDate || '—';
+  const td = todayStr();
+  if (!S.pareceres[k]) S.pareceres[k] = [];
+
+  // Uma entrada por baseDate — atualiza se já existe
+  const ei = S.pareceres[k].findIndex(function(h) { return h.baseDate === bd; });
+  const reg = { texto: texto, data: td, baseDate: bd };
+  if (ei !== -1) S.pareceres[k][ei] = reg;
+  else S.pareceres[k].push(reg);
+
   saveLocal();
 
   if (WEB_APP_URL) {
-    fetch(WEB_APP_URL, {method:'POST', body:JSON.stringify({
-      action:'saveParecer',
-      data:{
-        emp:row.emp, doc:row.doc, titulo:row.titulo, parc:row.parc,
-        cliente:row.cliente, nomeCliente:row.cliente, rep:row.rep,
-        emissao:'', vcto:row._vctoStr||'—', atraso:row.atraso,
-        vlrTit:row.vlrTit, vlrPago:row.vlrPago, vlrAberto:row.vlrAberto,
-        parecer:texto, baseDate:row._baseDate||'—',
-        key:rowKey(row)
-      }
-    })}).catch(()=>{});
+    fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'saveParecer',
+        data: {
+          emp: row.emp, doc: row.doc, titulo: row.titulo, parc: row.parc,
+          cliente: row.cliente, nomeCliente: row.cliente, rep: row.rep,
+          emissao: '', vcto: row._vctoStr||'—', atraso: row.atraso,
+          vlrTit: row.vlrTit, vlrPago: row.vlrPago, vlrAberto: row.vlrAberto,
+          parecer: texto, baseDate: bd, data: td,
+          key: k
+        }
+      })
+    }).catch(function() {});
   }
 
   showToast('Parecer salvo!', 'success');
   renderAll();
 }
 
+
 function editParecer(idx) {
   const row = window._filteredRows[idx];
-  const k=rowKey(row), td=todayStr();
+  const k = rowKey(row);
+  const bd = row._baseDate || '—';
   if (S.pareceres[k]) {
-    const ei = S.pareceres[k].findIndex(h=>h.data===td);
-    if (ei!==-1) S.pareceres[k].splice(ei,1);
+    const ei = S.pareceres[k].findIndex(h => h.baseDate === bd);
+    if (ei !== -1) S.pareceres[k].splice(ei, 1);
   }
   renderAll();
-  setTimeout(()=>{ const i=document.getElementById('inp_'+idx); if(i)i.focus(); },60);
+  setTimeout(() => {
+    const inp = document.getElementById('inp_' + idx);
+    if (inp) inp.focus();
+  }, 60);
 }
 
 // ══════════════════════════════════════════════════════
@@ -935,6 +1037,116 @@ function handleModalClick(e) { if(e.target===document.getElementById('modalOverl
 function setDoc(d)   { S.docFilter=d;    renderAll(); }
 function setStatus(s){ S.statusFilter=s; renderAll(); }
 function setPeriod(p){ S.periodFilter=p; renderAll(); }
+
+// ── MULTISELECT ──────────────────────────────────────────────────
+function toggleMs(id) {
+  document.querySelectorAll('.ms-dropdown').forEach(d => {
+    if (d.id !== id) d.classList.remove('open');
+  });
+  const dd = document.getElementById(id);
+  if (dd) dd.classList.toggle('open');
+}
+
+function filterMsList(inputId, listId) {
+  const q = document.getElementById(inputId).value.toLowerCase();
+  document.querySelectorAll('#' + listId + ' .ms-item').forEach(item => {
+    item.style.display = item.dataset.val.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function toggleMsItem(type, val) {
+  const arr = type === 'client' ? S.clientFilter : S.repFilter;
+  const idx = arr.indexOf(val);
+  if (idx === -1) arr.push(val);
+  else arr.splice(idx, 1);
+  updateMsTrigger(type);
+  renderTable();
+}
+
+function clearMs(type) {
+  if (type === 'client') S.clientFilter = [];
+  else S.repFilter = [];
+  updateMsTrigger(type);
+  const listId = type === 'client' ? 'msClientList' : 'msRepList';
+  document.querySelectorAll('#' + listId + ' input[type=checkbox]').forEach(cb => cb.checked = false);
+  renderTable();
+}
+
+function updateMsTrigger(type) {
+  const arr = type === 'client' ? S.clientFilter : S.repFilter;
+  const btn = document.getElementById(type === 'client' ? 'msBtnClient' : 'msBtnRep');
+  const label = type === 'client' ? 'Cliente' : 'Representante';
+  if (!btn) return;
+  if (arr.length === 0) {
+    btn.textContent = label;
+    btn.classList.remove('active-filter');
+  } else if (arr.length === 1) {
+    btn.textContent = arr[0].length > 18 ? arr[0].slice(0,18)+'…' : arr[0];
+    btn.classList.add('active-filter');
+  } else {
+    btn.textContent = label + ' (' + arr.length + ')';
+    btn.classList.add('active-filter');
+  }
+}
+
+function buildMsDropdown(type, items) {
+  const id     = type === 'client' ? 'msClient' : 'msRep';
+  const listId = id + 'List';
+  const inpId  = id + 'Search';
+  const arr    = type === 'client' ? S.clientFilter : S.repFilter;
+  const label  = type === 'client' ? 'Cliente' : 'Representante';
+  const btnId  = type === 'client' ? 'msBtnClient' : 'msBtnRep';
+  const ddId   = type === 'client' ? 'msClientDd' : 'msRepDd';
+
+  const itemsHtml = [...new Set(items)].sort().map(function(v) {
+    const checked = arr.includes(v) ? 'checked' : '';
+    const vs = esc(v);
+    const vj = v.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return '<div class="ms-item" data-val="' + vs + '">' +
+      '<input type="checkbox" ' + checked + ' onchange="toggleMsItem(\''+type+'\',\''+vj+'\')">'+
+      '<label onclick="toggleMsItem(\''+type+'\',\''+vj+'\')">'+vs+'</label>'+
+      '</div>';
+  }).join('');
+
+  const triggerLabel = arr.length === 0 ? label : arr.length === 1 ? esc(arr[0]) : label + ' (' + arr.length + ')';
+  const activeCls = arr.length ? ' active-filter' : '';
+
+  return '<div class="ms-wrap">' +
+    '<button class="ms-trigger' + activeCls + '" id="' + btnId + '" onclick="toggleMs(\''+ddId+'\')">'+triggerLabel+'</button>' +
+    '<div class="ms-dropdown" id="' + ddId + '">' +
+      '<div class="ms-search"><input id="' + inpId + '" type="text" placeholder="Buscar ' + label.toLowerCase() + '..." oninput="filterMsList(\''+inpId+'\',\''+listId+'\')"></div>' +
+      '<div class="ms-list" id="' + listId + '">' + itemsHtml + '</div>' +
+      '<div class="ms-footer">' +
+        '<button class="ms-clear" onclick="clearMs(\''+type+'\')">Limpar</button>' +
+        '<span class="ms-count">' + arr.length + ' selecionado' + (arr.length !== 1 ? 's' : '') + '</span>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+// Fecha dropdowns ao clicar fora
+document.addEventListener('click', e => {
+  if (!e.target.closest('.ms-wrap')) {
+    document.querySelectorAll('.ms-dropdown').forEach(d => d.classList.remove('open'));
+  }
+});
+
+// ── RECORRÊNCIA ──────────────────────────────────────────────────
+function getRecorrencia(cliente) {
+  // Conta em quantas bases diferentes esse cliente apareceu
+  const bases = new Set();
+  S.allImports.forEach(imp => {
+    if (imp.rows.some(r => r.cliente === cliente)) bases.add(imp.baseDate);
+  });
+  return bases.size;
+}
+
+function recorrBadge(n) {
+  if (n <= 1) return '';
+  const cls = n >= 5 ? 'high' : n >= 3 ? 'mid' : 'low';
+  return '<span class="recorr-badge ' + cls + '" title="' + n + ' bases">⚠ ' + n + 'x</span>';
+}
+
 function switchTab(tab) {
   S.tab=tab; S.statusFilter='TODOS';
   ['hoje','geral','pagos'].forEach(t =>
@@ -964,9 +1176,32 @@ if (S.allImports.length) {
   document.getElementById('headerSub').textContent='Última base: '+last.baseDate+' · '+last.rows.length+' títulos';
   document.getElementById('baseDateText').textContent=last.baseDate;
   document.getElementById('baseBadge').style.display='flex';
-  if (WEB_APP_URL) document.getElementById('syncBtn').style.display='flex';
+
   renderAll();
 }
+</script>
+</body>
+</html  // Salva lista no Sheets e busca pareceres existentes automaticamente
+  if (WEB_APP_URL) {
+    showToast('Salvando no Sheets e buscando histórico...', 'info');
+    fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveLista', baseDate: baseDate, rows: rawRowsForSheets })
+    }).catch(function(e) { console.warn('saveLista:', e); });
+    loadAllPareceres().then(function() {
+      renderAll();
+      showToast(newRows.length + ' títulos carregados · Base: ' + baseDate, 'success');
+    }).catch(function() {
+      showToast(newRows.length + ' títulos carregados · Base: ' + baseDate, 'success');
+    });
+    return;
+  } else {
+    showToast(newRows.length + ' títulos carregados · Base: ' + baseDate, 'success');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
 </script>
 </body>
 </html>
