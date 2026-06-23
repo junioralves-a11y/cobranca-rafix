@@ -768,69 +768,94 @@ function card(icon_cls, icon, label, value, sub, val_cls='') {
 function updateToolbar() {
   const ta = document.getElementById('toolbarArea');
   if (!S.allImports.length) {
-    ta.innerHTML = '<div style="padding:10px 0;color:var(--text-light);font-size:12px">↑ Importe um arquivo Excel para começar</div>';
+    ta.innerHTML = '<div style="padding:10px 0;color:var(--text-light);font-size:12px">&#8593; Importe um arquivo Excel para comecar</div>';
     return;
   }
 
-  // Doc filter buttons
-  const docBtns = ['TODOS','DUP','PED','ASSIST'].map(function(d) {
-    const active = S.docFilter === d ? ' active' : '';
-    const label  = d === 'TODOS' ? 'Todos' : d;
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn' + active;
-    btn.textContent = label;
-    btn.onclick = function() { setDoc(d); };
-    return btn.outerHTML.replace('</button>','') + label + '</button>';
-  }).join('');
+  const allRows = geralRows(30);
+  const clientes = [...new Set(allRows.map(function(r){return r.cliente;}).filter(Boolean))];
+  const reps     = [...new Set(allRows.map(function(r){return r.rep;}).filter(Boolean))];
+  const bases = [...S.allImports]
+    .sort(function(a,b){return (parseBR(b.baseDate)||0)-(parseBR(a.baseDate)||0);})
+    .map(function(i){return i.baseDate;}).join(', ');
 
-  // Status filter buttons
-  const stList   = S.tab === 'pagos' ? ['TODOS','gray'] : ['TODOS','red','yellow','green'].concat(S.tab === 'geral' ? ['gray'] : []);
-  const stLabels = {TODOS:'Todos', red:'🔴 Vencidos', yellow:'🟡 7 dias', green:'🟢 Em dia', gray:'⚫ Pagos'};
-  const statusBtns = stList.map(function(s) {
-    const active = S.statusFilter === s ? (' active' + (s !== 'TODOS' ? ' ' + s + '-f' : '')) : '';
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn' + active;
-    btn.textContent = stLabels[s];
-    btn.onclick = function() { setStatus(s); };
-    return btn.outerHTML.replace('</button>','') + stLabels[s] + '</button>';
-  }).join('');
+  // Cria elementos via DOM para evitar problemas de aspas
+  ta.innerHTML = '';
 
-  // Period buttons (only Geral and Pagos)
-  let periodBtns = '';
-  if (S.tab !== 'hoje') {
-    const pBtns = [3,5,30].map(function(p) {
-      const active = S.periodFilter === p ? ' active' : '';
+  // Doc group
+  const docGrp = document.createElement('div');
+  docGrp.className = 'filter-group';
+  ['TODOS','DUP','PED','ASSIST'].forEach(function(d) {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (S.docFilter===d?' active':'');
+    btn.textContent = d==='TODOS'?'Todos':d;
+    btn.addEventListener('click', function(){setDoc(d);});
+    docGrp.appendChild(btn);
+  });
+  ta.appendChild(docGrp);
+
+  // Status group
+  const stGrp = document.createElement('div');
+  stGrp.className = 'filter-group';
+  const stList = S.tab==='pagos'?['TODOS','gray']:['TODOS','red','yellow','green'].concat(S.tab==='geral'?['gray']:[]);
+  const stLabels = {TODOS:'Todos',red:'Vencidos',yellow:'7 dias',green:'Em dia',gray:'Pagos'};
+  const stIcons  = {TODOS:'',red:'🔴 ',yellow:'🟡 ',green:'🟢 ',gray:'⚫ '};
+  stList.forEach(function(s) {
+    const btn = document.createElement('button');
+    const isActive = S.statusFilter===s;
+    btn.className = 'filter-btn'+(isActive?(' active'+(s!=='TODOS'?' '+s+'-f':'')):'');
+    btn.textContent = stIcons[s]+stLabels[s];
+    btn.addEventListener('click', function(){setStatus(s);});
+    stGrp.appendChild(btn);
+  });
+  ta.appendChild(stGrp);
+
+  // Period group
+  if (S.tab!=='hoje') {
+    const pGrp = document.createElement('div');
+    pGrp.className = 'filter-group';
+    [3,5,30].forEach(function(p) {
       const btn = document.createElement('button');
-      btn.className = 'filter-btn' + active;
-      btn.textContent = p + 'd';
-      btn.onclick = function() { setPeriod(p); };
-      return btn.outerHTML.replace('</button>','') + p + 'd</button>';
-    }).join('');
-    periodBtns = '<div class="filter-group">' + pBtns + '</div>';
+      btn.className = 'filter-btn'+(S.periodFilter===p?' active':'');
+      btn.textContent = p+'d';
+      btn.addEventListener('click', function(){setPeriod(p);});
+      pGrp.appendChild(btn);
+    });
+    ta.appendChild(pGrp);
   }
 
-  // Multiselect dropdowns
-  const allRows = geralRows(30);
-  const clientes = [...new Set(allRows.map(function(r) { return r.cliente; }).filter(Boolean))];
-  const reps     = [...new Set(allRows.map(function(r) { return r.rep; }).filter(Boolean))];
+  // Multiselect Cliente
+  const msClientEl = document.createElement('div');
+  msClientEl.innerHTML = buildMsDropdown('client', clientes);
+  ta.appendChild(msClientEl.firstChild);
+
+  // Multiselect Representante
+  const msRepEl = document.createElement('div');
+  msRepEl.innerHTML = buildMsDropdown('rep', reps);
+  ta.appendChild(msRepEl.firstChild);
 
   // Bases info
-  const bases = [...S.allImports]
-    .sort(function(a,b) { return (parseBR(b.baseDate)||0) - (parseBR(a.baseDate)||0); })
-    .map(function(i) { return i.baseDate; }).join(', ');
+  const basesSpan = document.createElement('span');
+  basesSpan.className = 'bases-info';
+  basesSpan.textContent = 'Bases: ' + bases;
+  ta.appendChild(basesSpan);
 
-  ta.innerHTML =
-    '<div class="filter-group">' + docBtns + '</div>' +
-    '<div class="filter-group">' + statusBtns + '</div>' +
-    periodBtns +
-    buildMsDropdown('client', clientes) +
-    buildMsDropdown('rep', reps) +
-    '<span class="bases-info">Bases: ' + bases + '</span>' +
-    '<div class="toolbar-spacer"></div>' +
-    '<div class="search-wrap">' +
-      '<span class="search-icon">🔍</span>' +
-      '<input type="text" placeholder="Buscar..." value="' + esc(S.search) + '" oninput="S.search=this.value;renderTable()">' +
-    '</div>';
+  // Spacer
+  const spacer = document.createElement('div');
+  spacer.className = 'toolbar-spacer';
+  ta.appendChild(spacer);
+
+  // Search
+  const searchWrap = document.createElement('div');
+  searchWrap.className = 'search-wrap';
+  searchWrap.innerHTML = '<span class="search-icon">🔍</span>';
+  const searchInput = document.createElement('input');
+  searchInput.type = 'text';
+  searchInput.placeholder = 'Buscar...';
+  searchInput.value = S.search;
+  searchInput.addEventListener('input', function(){S.search=this.value;renderTable();});
+  searchWrap.appendChild(searchInput);
+  ta.appendChild(searchWrap);
 }
 
 
