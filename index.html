@@ -37,6 +37,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13
 .base-badge{display:flex;align-items:center;gap:6px;background:#FFFBEB;border:1px solid #FCD34D;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:#92400E}
 .import-btn{background:var(--primary);color:#fff;border:none;padding:0 16px;height:34px;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;white-space:nowrap;font-family:var(--font)}
 .import-btn:hover{background:var(--primary-hover)}
+.clear-btn{background:none;border:1px solid var(--red-border);color:var(--red);border-radius:6px;padding:0 12px;height:34px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;font-family:var(--font)}
+.clear-btn:hover{background:var(--red-bg)}
 #fileInput{display:none}
 
 
@@ -206,6 +208,9 @@ td{padding:8px 10px;vertical-align:middle;white-space:nowrap}
         📅 Base: <span id="baseDateText">—</span>
       </div>
 
+      <button class="clear-btn" onclick="confirmClear()" title="Limpar todos os dados locais">
+        🗑 Limpar Dados
+      </button>
       <button class="import-btn" onclick="document.getElementById('fileInput').click()">
         ↑ Importar Excel
       </button>
@@ -699,18 +704,7 @@ async function loadAllPareceres() {
   } catch(e) { console.warn('loadAllPareceres:', e); }
 }
 
-function normDate(raw) {
-  if (!raw) return '';
-  const s = String(raw).trim();
-  if (s.match(/^\d{2}\/\d{2}\/\d{4}$/)) return s;
-  const d = new Date(s);
-  if (!isNaN(d)) {
-    return String(d.getDate()).padStart(2,'0') + '/' +
-           String(d.getMonth()+1).padStart(2,'0') + '/' +
-           d.getFullYear();
-  }
-  return s;
-}
+
 // ══════════════════════════════════════════════════════
 // RENDER
 // ══════════════════════════════════════════════════════
@@ -774,56 +768,71 @@ function card(icon_cls, icon, label, value, sub, val_cls='') {
 function updateToolbar() {
   const ta = document.getElementById('toolbarArea');
   if (!S.allImports.length) {
-    ta.innerHTML='<div style="padding:10px 0;color:var(--text-light);font-size:12px">↑ Importe um arquivo Excel para começar</div>';
+    ta.innerHTML = '<div style="padding:10px 0;color:var(--text-light);font-size:12px">↑ Importe um arquivo Excel para começar</div>';
     return;
   }
 
-  const docBtns = ['TODOS','DUP','PED','ASSIST'].map(d =>
-    `<button class="filter-btn${S.docFilter===d?' active':''}" onclick="setDoc(\'${d}\')">
-      ${d==='TODOS'?'Todos':d}</button>`
-  ).join('');
-
-  const stList = S.tab==='pagos'
-    ? ['TODOS','gray']
-    : ['TODOS','red','yellow','green',...(S.tab==='geral'?['gray']:[])];
-  const stLabels = {TODOS:'Todos',red:'🔴 Vencidos',yellow:'🟡 7 dias',green:'🟢 Em dia',gray:'⚫ Pagos'};
-  const statusBtns = stList.map(s => {
-    const cls = S.statusFilter===s?` active${s!=='TODOS'?' '+s+'-f':''}`:''
-    return `<button class="filter-btn${cls}" onclick="setStatus(\'${s}\')">
-      ${stLabels[s]}</button>`;
+  // Doc filter buttons
+  const docBtns = ['TODOS','DUP','PED','ASSIST'].map(function(d) {
+    const active = S.docFilter === d ? ' active' : '';
+    const label  = d === 'TODOS' ? 'Todos' : d;
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + active;
+    btn.textContent = label;
+    btn.onclick = function() { setDoc(d); };
+    return btn.outerHTML.replace('</button>','') + label + '</button>';
   }).join('');
 
-  const periodBtns = S.tab!=='hoje' ? `
-    <div class="filter-group">
-      ${[3,5,30].map(p =>
-        `<button class="filter-btn${S.periodFilter===p?' active':''}" onclick="setPeriod(${p})">${p}d</button>`
-      ).join('')}
-    </div>` : '';
+  // Status filter buttons
+  const stList   = S.tab === 'pagos' ? ['TODOS','gray'] : ['TODOS','red','yellow','green'].concat(S.tab === 'geral' ? ['gray'] : []);
+  const stLabels = {TODOS:'Todos', red:'🔴 Vencidos', yellow:'🟡 7 dias', green:'🟢 Em dia', gray:'⚫ Pagos'};
+  const statusBtns = stList.map(function(s) {
+    const active = S.statusFilter === s ? (' active' + (s !== 'TODOS' ? ' ' + s + '-f' : '')) : '';
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + active;
+    btn.textContent = stLabels[s];
+    btn.onclick = function() { setStatus(s); };
+    return btn.outerHTML.replace('</button>','') + stLabels[s] + '</button>';
+  }).join('');
 
-  const bases = [...S.allImports]
-    .sort((a,b)=>(parseBR(b.baseDate)||0)-(parseBR(a.baseDate)||0))
-    .map(i=>i.baseDate).join(', ');
+  // Period buttons (only Geral and Pagos)
+  let periodBtns = '';
+  if (S.tab !== 'hoje') {
+    const pBtns = [3,5,30].map(function(p) {
+      const active = S.periodFilter === p ? ' active' : '';
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn' + active;
+      btn.textContent = p + 'd';
+      btn.onclick = function() { setPeriod(p); };
+      return btn.outerHTML.replace('</button>','') + p + 'd</button>';
+    }).join('');
+    periodBtns = '<div class="filter-group">' + pBtns + '</div>';
+  }
 
-  // Coleta clientes e representantes únicos
+  // Multiselect dropdowns
   const allRows = geralRows(30);
-  const clientes = [...new Set(allRows.map(r => r.cliente).filter(Boolean))];
-  const reps     = [...new Set(allRows.map(r => r.rep).filter(Boolean))];
+  const clientes = [...new Set(allRows.map(function(r) { return r.cliente; }).filter(Boolean))];
+  const reps     = [...new Set(allRows.map(function(r) { return r.rep; }).filter(Boolean))];
 
-  ta.innerHTML = `
-    <div class="filter-group">${docBtns}</div>
-    <div class="filter-group">${statusBtns}</div>
-    ${periodBtns}
-    ${buildMsDropdown('client', clientes)}
-    ${buildMsDropdown('rep', reps)}
-    <span class="bases-info">Bases: ${bases}</span>
-    <div class="toolbar-spacer"></div>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Buscar..."
-        value="${esc(S.search)}"
-        oninput="S.search=this.value;renderTable()">
-    </div>`;
+  // Bases info
+  const bases = [...S.allImports]
+    .sort(function(a,b) { return (parseBR(b.baseDate)||0) - (parseBR(a.baseDate)||0); })
+    .map(function(i) { return i.baseDate; }).join(', ');
+
+  ta.innerHTML =
+    '<div class="filter-group">' + docBtns + '</div>' +
+    '<div class="filter-group">' + statusBtns + '</div>' +
+    periodBtns +
+    buildMsDropdown('client', clientes) +
+    buildMsDropdown('rep', reps) +
+    '<span class="bases-info">Bases: ' + bases + '</span>' +
+    '<div class="toolbar-spacer"></div>' +
+    '<div class="search-wrap">' +
+      '<span class="search-icon">🔍</span>' +
+      '<input type="text" placeholder="Buscar..." value="' + esc(S.search) + '" oninput="S.search=this.value;renderTable()">' +
+    '</div>';
 }
+
 
 function renderTable() {
   const hasData = S.allImports.length > 0;
@@ -869,7 +878,9 @@ function renderTable() {
     const st   = getStatus(row);
     const k    = rowKey(row);
     const hist = S.pareceres[k]||[];
-    const lastParecer  = hist.length ? hist[hist.length-1] : null;
+    // lastParecer = último parecer de base ANTERIOR à atual (para placeholder)
+    const lastParecer  = hist.filter(h => h.baseDate !== row._baseDate).slice(-1)[0] || null;
+    // todayParecer = parecer da base atual (só este permite edição)
     const todayParecer = hist.find(h => h.baseDate === row._baseDate);
 
     const stBadge  = `<span class="status-badge ${st}"><span class="status-dot ${st}"></span>${statusLabel(st)}</span>`;
@@ -1101,7 +1112,7 @@ function buildMsDropdown(type, items) {
   const itemsHtml = [...new Set(items)].sort().map(function(v) {
     const checked = arr.includes(v) ? 'checked' : '';
     const vs = esc(v);
-    const vj = v.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const vj = v.replace(/'/g, "\\'");
     return '<div class="ms-item" data-val="' + vs + '">' +
       '<input type="checkbox" ' + checked + ' onchange="toggleMsItem(\''+type+'\',\''+vj+'\')">'+
       '<label onclick="toggleMsItem(\''+type+'\',\''+vj+'\')">'+vs+'</label>'+
@@ -1166,6 +1177,18 @@ function showToast(msg, type='success') {
 }
 
 // ══════════════════════════════════════════════════════
+// LIMPAR DADOS
+// ══════════════════════════════════════════════════════
+function confirmClear() {
+  const msg = 'Tem certeza que deseja limpar todos os dados locais? Isso apagará todas as bases importadas e pareceres salvos localmente. Os dados no Google Sheets não serão afetados.';
+  if (confirm(msg)) {
+    localStorage.removeItem('cb_v2_imports');
+    localStorage.removeItem('cb_v2_pareceres');
+    location.reload();
+  }
+}
+
+// ══════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════
 loadLocal();
@@ -1197,6 +1220,18 @@ if (S.allImports.length) {
     return;
   } else {
     showToast(newRows.length + ' títulos carregados · Base: ' + baseDate, 'success');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// LIMPAR DADOS
+// ══════════════════════════════════════════════════════
+function confirmClear() {
+  const msg = 'Tem certeza que deseja limpar todos os dados locais? Isso apagará todas as bases importadas e pareceres salvos localmente. Os dados no Google Sheets não serão afetados.';
+  if (confirm(msg)) {
+    localStorage.removeItem('cb_v2_imports');
+    localStorage.removeItem('cb_v2_pareceres');
+    location.reload();
   }
 }
 
