@@ -25,33 +25,34 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13
 
 /* FIXED TOP */
 .fixed-top{flex-shrink:0;background:var(--bg);z-index:100}
+.fixed-top>.header,.fixed-top>.tabs-bar{width:100%}
 
 /* HEADER */
-.header{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm)}
+.header{background:#1A1F2E;border-bottom:1px solid #2A3045;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .header-left{display:flex;align-items:center;gap:12px}
-.logo-wrap{width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.logo-wrap img{width:36px;height:36px;object-fit:contain}
-.header-title{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
-.header-sub{font-size:11px;color:var(--text-muted);margin-top:1px}
+.logo-wrap{width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.05);border-radius:10px;padding:4px}
+.logo-wrap img{width:32px;height:32px;object-fit:contain}
+.header-title{font-size:15px;font-weight:700;color:#FFFFFF;letter-spacing:-0.3px}
+.header-sub{font-size:11px;color:#8B93A8;margin-top:1px}
 .header-right{display:flex;align-items:center;gap:10px}
-.base-badge{display:flex;align-items:center;gap:6px;background:#FFFBEB;border:1px solid #FCD34D;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:#92400E}
-.import-btn{background:var(--primary);color:#fff;border:none;padding:0 16px;height:34px;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;white-space:nowrap;font-family:var(--font)}
-.import-btn:hover{background:var(--primary-hover)}
-.clear-btn{background:none;border:1px solid var(--red-border);color:var(--red);border-radius:6px;padding:0 12px;height:34px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;font-family:var(--font)}
-.clear-btn:hover{background:var(--red-bg)}
+.base-badge{display:flex;align-items:center;gap:6px;background:rgba(255,193,7,.12);border:1px solid rgba(255,193,7,.35);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:#FCD34D}
+.import-btn{background:#2D5ECC;color:#fff;border:none;padding:0 16px;height:34px;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;white-space:nowrap;font-family:var(--font)}
+.import-btn:hover{background:#2451B5}
+.clear-btn{background:none;border:1px solid rgba(255,255,255,.15);color:#8B93A8;border-radius:6px;padding:0 12px;height:34px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;font-family:var(--font)}
+.clear-btn:hover{background:rgba(248,113,113,.1)}
 #fileInput{display:none}
 
 
 /* TABS */
-.tabs-bar{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex}
-.tab-btn{padding:12px 20px;border:none;background:none;color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:6px;font-family:var(--font)}
-.tab-btn:hover{color:var(--text)}
-.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
-.tab-badge{background:var(--primary-light);color:var(--primary);font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px}
-.tab-badge.red-badge{background:var(--red-bg);color:var(--red)}
+.tabs-bar{background:#252B3B;border-bottom:1px solid #2A3045;padding:0 24px;display:flex}
+.tab-btn{padding:12px 20px;border:none;background:none;color:#8B93A8;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:6px;font-family:var(--font)}
+.tab-btn:hover{color:#FFFFFF}
+.tab-btn.active{color:#FFFFFF;border-bottom-color:#4D8EFF;font-weight:600}
+.tab-badge{background:rgba(77,142,255,.2);color:#7DB3FF;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px}
+.tab-badge.red-badge{background:rgba(248,113,113,.2);color:#F87171}
 
 /* CARDS */
-.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px 24px 0}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px 24px 0;background:var(--bg)}
 .card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow-sm);display:flex;align-items:flex-start;gap:12px}
 .card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .card-icon.blue{background:var(--primary-light)}.card-icon.red{background:var(--red-bg)}.card-icon.yellow{background:var(--yellow-bg)}.card-icon.green{background:var(--green-bg)}.card-icon.gray{background:var(--gray-bg)}
@@ -62,7 +63,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13
 .card-sub{font-size:11px;color:var(--text-light);margin-top:3px}
 
 /* TOOLBAR */
-.toolbar{padding:10px 24px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.toolbar{padding:10px 24px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg)}
 .filter-group{display:flex;gap:3px;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:3px}
 .filter-btn{padding:5px 12px;border-radius:4px;border:none;background:transparent;color:var(--text-muted);font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;white-space:nowrap;font-family:var(--font)}
 .filter-btn:hover{background:var(--bg);color:var(--text)}
@@ -281,10 +282,12 @@ let S = {
   statusFilter: 'TODOS',
   periodFilter: 3,
   search: '',
-  clientFilter: [],      // multiselect clientes
-  repFilter: [],         // multiselect representantes
+  clientFilter: [],
+  repFilter: [],
   allImports: [],
   pareceres: {},
+  sortCol: '',
+  sortDir: 1,
 };
 
 // ══════════════════════════════════════════════════════
@@ -484,6 +487,7 @@ function parseAndSave(raw, filename, baseDate) {
   };
 
   const iEmp=col('emp'), iDoc=col('doc'), iTit=col('titulo'), iParc=col('parc');
+  const iCli=col('cliente');
   const iVcto=col('vencimento'), iAtraso=col('atraso');
   const iVlrTit=col('vlr tit','vlr_tit'), iVlrPago=col('vlr pago','vlr_pago'), iVlrAb=col('vlr aberto','vlr_ab');
   const iCidade=col('cidade'), iUF=col('uf');
@@ -534,6 +538,7 @@ function parseAndSave(raw, filename, baseDate) {
       doc,
       titulo:    String(r[iTit]??''). trim(),
       parc:      String(r[iParc]??''). trim(),
+      codCli:    iCli!==-1 ? String(r[iCli]??''). trim() : '',
       cliente:   iNome1!==-1 ? String(r[iNome1]??''). trim() : '',
       rep:       iNome2!==-1 ? String(r[iNome2]??''). trim() : '',
       _vcto:     vctoDate,
@@ -772,14 +777,20 @@ function updateToolbar() {
     return;
   }
 
-  const allRows = geralRows(30);
-  const clientes = [...new Set(allRows.map(function(r){return r.cliente;}).filter(Boolean))];
-  const reps     = [...new Set(allRows.map(function(r){return r.rep;}).filter(Boolean))];
+  // Rows visíveis com filtros de doc e status aplicados (sem filtro de cliente/rep)
+  const baseRows = currentRows().filter(function(row) {
+    if (S.docFilter !== 'TODOS' && row.doc !== S.docFilter) return false;
+    if (S.statusFilter !== 'TODOS' && getStatus(row) !== S.statusFilter) return false;
+    return true;
+  });
+
+  const clientes = [...new Set(baseRows.map(function(r){return r.cliente;}).filter(Boolean))].sort();
+  const reps     = [...new Set(baseRows.map(function(r){return r.rep;}).filter(Boolean))].sort();
+
   const bases = [...S.allImports]
     .sort(function(a,b){return (parseBR(b.baseDate)||0)-(parseBR(a.baseDate)||0);})
     .map(function(i){return i.baseDate;}).join(', ');
 
-  // Cria elementos via DOM para evitar problemas de aspas
   ta.innerHTML = '';
 
   // Doc group
@@ -878,6 +889,22 @@ function renderTable() {
   });
 
   // Badges
+  // Ordenação
+  if (S.sortCol) {
+    filtered.sort(function(a,b) {
+      let va, vb;
+      if (S.sortCol === 'vcto')    { va = a._vcto||new Date(9999,0,1); vb = b._vcto||new Date(9999,0,1); return (va-vb)*S.sortDir; }
+      if (S.sortCol === 'atraso')  { va = a.atraso||0; vb = b.atraso||0; return (va-vb)*S.sortDir; }
+      if (S.sortCol === 'aberto')  { va = a.vlrAberto||0; vb = b.vlrAberto||0; return (va-vb)*S.sortDir; }
+      if (S.sortCol === 'parecer') {
+        const ha = (S.pareceres[rowKey(a)]||[]).length > 0;
+        const hb = (S.pareceres[rowKey(b)]||[]).length > 0;
+        return (ha===hb?0:ha?-1:1)*S.sortDir;
+      }
+      return 0;
+    });
+  }
+
   document.getElementById('badgeHoje').textContent = todayRows().length;
   document.getElementById('badgeGeral').textContent = geralRows(S.periodFilter).length;
   document.getElementById('badgePagos').textContent = pagosRows(S.periodFilter).length;
@@ -886,8 +913,36 @@ function renderTable() {
   const isPagos = S.tab==='pagos';
 
   // thead
-  let thCols = '<th>Status</th><th>Doc.</th><th>Título/Parc.</th><th>Cliente</th><th>Representante</th><th>Vencimento</th><th>Atraso</th><th>Vlr Título</th><th>Vlr Pago</th><th>Vlr Aberto</th><th>Base</th><th>Parecer</th><th>Hist.</th>';
-  if (isPagos) thCols = '<th>Doc.</th><th>Título/Parc.</th><th>Cliente</th><th>Representante</th><th>Vencimento</th><th>Vlr Aberto</th><th>Base</th><th>Último Parecer</th><th>Hist.</th>';
+  const sa = function(col) {
+    if (S.sortCol!==col) return ' <span style="color:#CBD3E0;font-size:9px">&#8645;</span>';
+    return S.sortDir===1?' <span style="color:#4D8EFF;font-size:9px">&#8593;</span>':' <span style="color:#4D8EFF;font-size:9px">&#8595;</span>';
+  };
+  let thCols =
+    '<th>Status</th>' +
+    '<th>Doc.</th>' +
+    '<th>Título/Parc.</th>' +
+    '<th>Cód.</th>' +
+    '<th>Cliente</th>' +
+    '<th>Representante</th>' +
+    '<th style="cursor:pointer;user-select:none" onclick="toggleSort(\"vcto\")">Vencimento' + sa('vcto') + '</th>' +
+    '<th style="cursor:pointer;user-select:none" onclick="toggleSort(\"atraso\")">Atraso' + sa('atraso') + '</th>' +
+    '<th>Vlr Título</th>' +
+    '<th>Vlr Pago</th>' +
+    '<th style="cursor:pointer;user-select:none" onclick="toggleSort(\"aberto\")">Vlr Aberto' + sa('aberto') + '</th>' +
+    '<th style="cursor:pointer;user-select:none" onclick="toggleSort(\"parecer\")">Reincid.' + sa('parecer') + '</th>' +
+    '<th style="cursor:pointer;user-select:none" onclick="toggleSort(\"parecer\")">Parecer' + sa('parecer') + '</th>' +
+    '<th>Hist.</th>';
+  if (isPagos) thCols =
+    '<th>Status</th>' +
+    '<th>Doc.</th>' +
+    '<th>Título/Parc.</th>' +
+    '<th>Cód.</th>' +
+    '<th>Cliente</th>' +
+    '<th>Representante</th>' +
+    '<th style="cursor:pointer;user-select:none" onclick="toggleSort(\"vcto\")">Vencimento' + sa('vcto') + '</th>' +
+    '<th>Vlr Título</th>' +
+    '<th>Último Parecer</th>' +
+    '<th>Hist.</th>';
   document.getElementById('tableHead').innerHTML = `<tr>${thCols}</tr>`;
 
   if (!filtered.length) {
@@ -917,7 +972,8 @@ function renderTable() {
 
     // Parecer cell
     let parecerHtml;
-    if (!isHoje || st==='gray') {
+    if (!isHoje && !isPagos) {
+      // Aba Geral: só leitura
       parecerHtml = lastParecer
         ? `<div class="parecer-readonly">${esc(lastParecer.texto)}<br>
             <span style="font-size:10px;color:var(--text-light)">${lastParecer.data} · Base ${lastParecer.baseDate||'—'}</span></div>`
@@ -925,7 +981,6 @@ function renderTable() {
     } else if (todayParecer) {
       const recNS = getRecorrencia(row.cliente);
       parecerHtml = `<div class="parecer-wrap">
-        ${recorrBadge(recNS)}
         <span class="parecer-readonly" style="flex:1">${esc(todayParecer.texto)}</span>
         <button class="edit-btn" onclick="editParecer(${idx})">✎</button>
       </div>`;
@@ -933,7 +988,6 @@ function renderTable() {
       const ph = lastParecer ? esc(lastParecer.texto) : 'Registrar parecer...';
       const recN = getRecorrencia(row.cliente);
       parecerHtml = `<div class="parecer-wrap">
-        ${recorrBadge(recN)}
         <input class="parecer-input" id="inp_${idx}" type="text" placeholder="${ph}"
           onkeydown="if(event.key==='Enter')saveParecer(${idx})">
         <button class="save-btn" onclick="saveParecer(${idx})">Salvar</button>
@@ -944,15 +998,20 @@ function renderTable() {
       ? `<button class="hist-btn" onclick="openHistorico(\'${k}\')">📋 ${hist.length}</button>`
       : '<span style="color:var(--text-light);font-size:11px">—</span>';
 
+    // Badge reincidência — só para vencidos, começa em 1x
+    const reincN = getStatus(row) === 'red' ? getRecorrencia(rowKey(row)) : 0;
+    const reincHtml = reincN > 0 ? recorrBadge(reincN) : '<span style="color:var(--text-light);font-size:11px">—</span>';
+
     if (isPagos) {
       return `<tr>
-        ${docBadge?'<td>'+docBadge+'</td>':''}<td>${docBadge}</td>
+        <td>${stBadge}</td>
+        <td>${docBadge}</td>
         <td style="color:var(--text-muted)">${esc(row.titulo)} / ${esc(row.parc)}</td>
+        <td style="color:var(--text-muted);font-size:11px">${esc(row.codCli||'—')}</td>
         <td><div class="client-name">${esc(row.cliente)}</div></td>
         <td><div class="rep-name">${esc(row.rep)}</div></td>
         <td style="${vctoColor};font-weight:500">${row._vctoStr||'—'}</td>
-        <td class="valor aberto">${fmtMoney(row.vlrAberto)}</td>
-        <td>${baseChip}</td>
+        <td class="valor">${fmtMoney(row.vlrTit)}</td>
         <td class="parecer-cell">${parecerHtml}</td>
         <td>${histHtml}</td>
       </tr>`;
@@ -962,6 +1021,7 @@ function renderTable() {
       <td>${stBadge}</td>
       <td>${docBadge}</td>
       <td style="color:var(--text-muted)">${esc(row.titulo)} / ${esc(row.parc)}</td>
+      <td style="color:var(--text-muted);font-size:11px">${esc(row.codCli||'—')}</td>
       <td><div class="client-name">${esc(row.cliente)}</div></td>
       <td><div class="rep-name">${esc(row.rep)}</div></td>
       <td style="${vctoColor};font-weight:500">${row._vctoStr||'—'}</td>
@@ -969,7 +1029,7 @@ function renderTable() {
       <td class="valor">${fmtMoney(row.vlrTit)}</td>
       <td>${vlrPagoHtml}</td>
       <td class="valor aberto">${fmtMoney(row.vlrAberto)}</td>
-      <td>${baseChip}</td>
+      <td>${reincHtml}</td>
       <td class="parecer-cell">${parecerHtml}</td>
       <td>${histHtml}</td>
     </tr>`;
@@ -1070,6 +1130,12 @@ function handleModalClick(e) { if(e.target===document.getElementById('modalOverl
 // ══════════════════════════════════════════════════════
 // FILTROS / TABS
 // ══════════════════════════════════════════════════════
+function toggleSort(col) {
+  if (S.sortCol === col) S.sortDir *= -1;
+  else { S.sortCol = col; S.sortDir = 1; }
+  renderTable();
+}
+
 function setDoc(d)   { S.docFilter=d;    renderAll(); }
 function setStatus(s){ S.statusFilter=s; renderAll(); }
 function setPeriod(p){ S.periodFilter=p; renderAll(); }
@@ -1168,19 +1234,21 @@ document.addEventListener('click', e => {
 });
 
 // ── RECORRÊNCIA ──────────────────────────────────────────────────
-function getRecorrencia(cliente) {
-  // Conta em quantas bases diferentes esse cliente apareceu
-  const bases = new Set();
-  S.allImports.forEach(imp => {
-    if (imp.rows.some(r => r.cliente === cliente)) bases.add(imp.baseDate);
+function getRecorrencia(key) {
+  // Conta em quantas bases esse título apareceu (vencido)
+  // Começa em 1x na base atual se estiver vencido
+  let count = 0;
+  S.allImports.forEach(function(imp) {
+    const row = imp.rows.find(function(r) { return rowKey(r) === key; });
+    if (row && !row._paid) count++;
   });
-  return bases.size;
+  return count;
 }
 
 function recorrBadge(n) {
-  if (n <= 1) return '';
+  if (n <= 0) return '';
   const cls = n >= 5 ? 'high' : n >= 3 ? 'mid' : 'low';
-  return '<span class="recorr-badge ' + cls + '" title="' + n + ' bases">⚠ ' + n + 'x</span>';
+  return '<span class="recorr-badge ' + cls + '" title="' + n + ' bases">' + n + 'x</span>';
 }
 
 function switchTab(tab) {
