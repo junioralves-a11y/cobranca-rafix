@@ -728,8 +728,20 @@ function currentRows() {
 
 function updateSummary() {
   const sa = document.getElementById('summaryArea');
-  const rows = currentRows();
-  if (!rows.length && !S.allImports.length) { sa.innerHTML=''; return; }
+  const allRows = currentRows();
+  if (!allRows.length && !S.allImports.length) { sa.innerHTML=''; return; }
+
+  // Aplica os mesmos filtros que a tabela usa (doc, status, cliente, rep, busca)
+  const rows = allRows.filter(row => {
+    if (S.docFilter !== 'TODOS' && row.doc !== S.docFilter) return false;
+    if (S.statusFilter !== 'TODOS' && getStatus(row) !== S.statusFilter) return false;
+    if (S.clientFilter && S.clientFilter.length && !S.clientFilter.includes(row.cliente)) return false;
+    if (S.repFilter && S.repFilter.length && !S.repFilter.includes(row.rep)) return false;
+    if (S.search) {
+      if (!(row.cliente+row.rep+row.titulo).toLowerCase().includes(S.search.toLowerCase())) return false;
+    }
+    return true;
+  });
 
   let total=0,cRed=0,vRed=0,cYel=0,vYel=0,cGreen=0,cPaid=0,vPaid=0,comParecer=0;
   rows.forEach(row => {
