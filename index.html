@@ -157,6 +157,22 @@ td{padding:8px 10px;vertical-align:middle;white-space:nowrap}
 /* PAID TABLE */
 .paid-info{font-size:11px;color:var(--text-muted);margin-top:2px}
 
+.kpi-hbar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.kpi-hbar-lbl{font-size:11px;color:var(--text-muted);width:60px;text-align:right;flex-shrink:0;font-weight:500}
+.kpi-hbar-track{flex:1;height:16px;background:var(--bg);border-radius:4px;overflow:hidden}
+.kpi-hbar-fill{height:100%;border-radius:4px;transition:width .4s}
+.kpi-hbar-val{font-size:11px;font-weight:700;color:var(--text);width:120px;flex-shrink:0}
+.kpi-legend{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.kpi-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.kpi-legend-lbl{font-size:11px;color:var(--text-muted);flex:1}
+.kpi-legend-val{font-size:11px;font-weight:700;color:var(--text)}
+@media print{
+  .hdr,.filters,.tabs-bar{display:none!important}
+  body{overflow:visible;height:auto}
+  .scroll-area{overflow:visible;padding:8mm 12mm}
+  #kpisPage{display:block!important}
+  #emptyState,#tableContainer{display:none!important}
+}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
@@ -229,6 +245,9 @@ td{padding:8px 10px;vertical-align:middle;white-space:nowrap}
     <button class="tab-btn" id="tabPagos" onclick="switchTab('pagos')">
       Pagos <span class="tab-badge red-badge" id="badgePagos">0</span>
     </button>
+    <button class="tab-btn" id="tabKpis" onclick="switchTab('kpis')">
+      KPIs
+    </button>
   </div>
 
   <div class="summary" id="summaryArea"></div>
@@ -249,6 +268,84 @@ td{padding:8px 10px;vertical-align:middle;white-space:nowrap}
       <thead id="tableHead"></thead>
       <tbody id="tableBody"></tbody>
     </table>
+  </div>
+
+  <!-- KPIs PAGE -->
+  <div id="kpisPage" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div>
+        <div style="font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.3px">Indicadores de Cobrança</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px" id="kpisDateRef">—</div>
+      </div>
+      <button onclick="window.print()" style="background:var(--primary);color:#fff;border:none;padding:0 16px;height:34px;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;font-family:var(--font)">🖨 Imprimir</button>
+    </div>
+    <!-- Mini filtros KPIs: só Tipo, Cliente, Representante -->
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap" id="kpisFiltros">
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">Tipo</span>
+        <div style="display:flex;gap:4px" id="kpisDocBtns"></div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">Cliente</span>
+        <select id="kpisClienteSel" onchange="renderKpis()" style="border:1.5px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:var(--font);color:var(--text);background:var(--white);outline:none;min-width:160px"></select>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">Representante</span>
+        <select id="kpisRepSel" onchange="renderKpis()" style="border:1.5px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:var(--font);color:var(--text);background:var(--white);outline:none;min-width:160px"></select>
+      </div>
+    </div>
+
+    <!-- PENDENTES -->
+    <div style="font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border)">PENDENTES</div>
+    <div class="summary" id="kpisPendentesCards" style="margin-bottom:16px"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+      <!-- Gráfico por tipo -->
+      <div class="table-container" style="padding:14px 16px">
+        <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Por Tipo de Documento</div>
+        <div id="kpisTipoChart"></div>
+      </div>
+      <!-- Gráfico parecer -->
+      <div class="table-container" style="padding:14px 16px">
+        <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Com Parecer × Sem Parecer</div>
+        <div id="kpisParecerChart"></div>
+      </div>
+    </div>
+
+    <!-- PAGOS -->
+    <div style="font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border)">PAGOS</div>
+    <div class="summary" id="kpisPagosCards" style="margin-bottom:16px"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+      <!-- Gráfico tipo pagos -->
+      <div class="table-container" style="padding:14px 16px">
+        <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Pagos por Tipo</div>
+        <div id="kpisTipoPagosChart"></div>
+      </div>
+      <!-- Gráfico efetividade -->
+      <div class="table-container" style="padding:14px 16px">
+        <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Efetividade do Contato</div>
+        <div id="kpisEfetividadeChart"></div>
+      </div>
+    </div>
+
+    <!-- Ranking representantes -->
+    <div style="font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:24px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border)">RANKING POR REPRESENTANTE</div>
+    <div class="table-container" style="overflow:hidden;margin-bottom:24px">
+      <table>
+        <thead><tr><th>#</th><th>Representante</th><th>Pendentes</th><th>Vlr Pendente</th><th>Pagos</th><th>Vlr Recuperado</th><th>% Contato</th></tr></thead>
+        <tbody id="kpisRepTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Ranking clientes -->
+    <div style="font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:24px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border)">RANKING POR CLIENTE</div>
+    <div class="table-container" style="overflow:hidden;margin-bottom:24px">
+      <table>
+        <thead><tr><th>#</th><th>Cliente</th><th>Pendentes</th><th>Vlr Pendente</th><th>Pagos</th><th>Vlr Recuperado</th><th>% Contato</th></tr></thead>
+        <tbody id="kpisCliTable"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -717,6 +814,7 @@ function renderAll() {
   updateSummary();
   updateToolbar();
   renderTable();
+  updateRelButtons();
 }
 
 function currentRows() {
@@ -784,6 +882,19 @@ function card(icon_cls, icon, label, value, sub, val_cls='') {
 
 function updateToolbar() {
   const ta = document.getElementById('toolbarArea');
+  // Na aba KPIs esconde a toolbar e a tabela
+  if (S.tab === 'kpis') {
+    ta.style.display = 'none';
+    const tc = document.getElementById('tableContainer');
+    if (tc) tc.style.display = 'none';
+    const search = document.getElementById('searchArea');
+    if (search) search.style.display = 'none';
+    return;
+  }
+  ta.style.display = '';
+  const search = document.getElementById('searchArea');
+  if (search) search.style.display = '';
+
   if (!S.allImports.length) {
     ta.innerHTML = '<div style="padding:10px 0;color:var(--text-light);font-size:12px">&#8593; Importe um arquivo Excel para comecar</div>';
     return;
@@ -1148,6 +1259,515 @@ function toggleSort(col) {
   renderTable();
 }
 
+// ── RELATÓRIOS ───────────────────────────────────────────────────────
+function updateRelButtons() {
+  const btn = document.getElementById('btnRelPendentes');
+  if (!btn) return;
+  if (S.tab === 'pagos') {
+    btn.textContent = '📄 Rel. Pagos';
+    btn.onclick = gerarRelatorioPagos;
+    btn.className = 'rel-btn rel-btn-pagos';
+  } else {
+    btn.textContent = '📄 Rel. Pendentes';
+    btn.onclick = gerarRelatorioPendentes;
+    btn.className = 'rel-btn';
+  }
+}
+
+function fmtMoneyRel(v) {
+  if (!v && v !== 0) return '—';
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function buildRelStyle() {
+  return `<style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',Arial,sans-serif;font-size:11px;color:#0F1828;background:#fff;padding:16mm 14mm}
+    h1{font-size:20px;font-weight:800;color:#0F1828;letter-spacing:-.4px}
+    h2{font-size:13px;font-weight:700;color:#0F1828;text-transform:uppercase;letter-spacing:.6px;margin:20px 0 8px;padding-bottom:6px;border-bottom:2px solid #E3E8F0}
+    .logo{font-size:13px;font-weight:800;color:#C49A2A;letter-spacing:2px}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #0F1828}
+    .header-sub{font-size:11px;color:#64748B;margin-top:3px}
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+    .kpi{background:#F8FAFC;border:1px solid #E3E8F0;border-radius:8px;padding:12px 14px}
+    .kpi-lbl{font-size:9px;color:#64748B;text-transform:uppercase;letter-spacing:.7px;font-weight:700;margin-bottom:4px}
+    .kpi-val{font-size:18px;font-weight:700;color:#0F1828;letter-spacing:-.3px}
+    .kpi-val.green{color:#057A55}.kpi-val.red{color:#DC2626}.kpi-val.blue{color:#1A56DB}.kpi-val.gold{color:#C49A2A}
+    .kpi-sub{font-size:10px;color:#94A3B8;margin-top:3px}
+    .charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+    .chart-box{background:#F8FAFC;border:1px solid #E3E8F0;border-radius:8px;padding:14px}
+    .chart-title{font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+    .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .bar-lbl{font-size:10px;color:#64748B;width:80px;flex-shrink:0;text-align:right}
+    .bar-track{flex:1;height:14px;background:#E3E8F0;border-radius:3px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:3px}
+    .bar-val{font-size:10px;font-weight:700;color:#0F1828;width:50px;flex-shrink:0}
+    .donut-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .donut-lbl{font-size:10px;color:#64748B;flex:1}
+    .donut-val{font-size:10px;font-weight:700;color:#0F1828}
+    table{width:100%;border-collapse:collapse;font-size:10px}
+    thead th{background:#1A2235;color:#fff;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:7px 10px;text-align:left}
+    tbody tr:nth-child(even){background:#F8FAFC}
+    tbody tr{border-bottom:1px solid #E3E8F0}
+    td{padding:6px 10px}
+    .badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:700}
+    .b-dup{background:#EEF2FF;color:#3730A3}
+    .b-ped{background:#FFF7ED;color:#C2410C}
+    .b-ast{background:#F0FDF4;color:#166534}
+    .b-green{background:#ECFDF5;color:#057A55}
+    .b-red{background:#FEF2F2;color:#991B1B}
+    .footer{margin-top:24px;padding-top:10px;border-top:1px solid #E3E8F0;display:flex;justify-content:space-between;font-size:9px;color:#94A3B8}
+    @media print{body{padding:8mm 10mm}@page{size:A4 portrait;margin:0}}
+  </style>`;
+}
+
+function barChart(items, colorFn) {
+  const max = Math.max(...items.map(i => i.val), 1);
+  return items.map(i => {
+    const pct = (i.val / max * 100).toFixed(0);
+    return '<div class="bar-row">' +
+      '<div class="bar-lbl">' + i.lbl + '</div>' +
+      '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + colorFn(i.lbl) + '"></div></div>' +
+      '<div class="bar-val">' + i.display + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function donutLegend(items) {
+  return items.map(i =>
+    '<div class="donut-row"><div class="donut-dot" style="background:' + i.color + '"></div><div class="donut-lbl">' + i.lbl + '</div><div class="donut-val">' + i.display + '</div></div>'
+  ).join('');
+}
+
+function docColor(doc) {
+  return doc === 'DUP' ? '#3730A3' : doc === 'PED' ? '#C2410C' : '#166534';
+}
+
+function docBadge(doc) {
+  const cls = doc === 'DUP' ? 'b-dup' : doc === 'PED' ? 'b-ped' : 'b-ast';
+  return '<span class="badge ' + cls + '">' + (doc||'—') + '</span>';
+}
+
+// ── RELATÓRIO DE PENDENTES ────────────────────────────────────────────
+function gerarRelatorioPendentes() {
+  const rows = S.tab === 'hoje' ? S.todayRows : geralRows(S.periodFilter);
+  const ativos = rows.filter(r => !r._paid);
+  const td = todayStr();
+
+  // KPIs
+  const totalAberto = ativos.reduce((s,r) => s + r.vlrAberto, 0);
+  const vencidos = ativos.filter(r => getStatus(r) === 'red');
+  const comParecer = ativos.filter(r => (S.pareceres[rowKey(r)]||[]).length > 0);
+  const semParecer = ativos.filter(r => (S.pareceres[rowKey(r)]||[]).length === 0);
+
+  // Por tipo
+  const tiposMap = {};
+  ativos.forEach(r => {
+    if (!tiposMap[r.doc]) tiposMap[r.doc] = {count:0, valor:0};
+    tiposMap[r.doc].count++;
+    tiposMap[r.doc].valor += r.vlrAberto;
+  });
+
+  // Por representante
+  const repMap = {};
+  ativos.forEach(r => {
+    if (!repMap[r.rep]) repMap[r.rep] = {count:0, valor:0, comParecer:0};
+    repMap[r.rep].count++;
+    repMap[r.rep].valor += r.vlrAberto;
+    if ((S.pareceres[rowKey(r)]||[]).length > 0) repMap[r.rep].comParecer++;
+  });
+  const topReps = Object.entries(repMap).sort((a,b) => b[1].valor - a[1].valor).slice(0, 10);
+
+  // Reincidentes (aparecem em 2+ bases)
+  const reincMap = {};
+  ativos.forEach(r => {
+    const n = S.allImports.filter(imp => imp.rows.some(x => rowKey(x) === rowKey(r) && !x._paid)).length;
+    if (n >= 2) reincMap[rowKey(r)] = {...r, bases: n};
+  });
+  const reincList = Object.values(reincMap).sort((a,b) => b.bases - a.bases).slice(0,10);
+
+  const now = new Date().toLocaleString('pt-BR');
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Rel. Pendentes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  ${buildRelStyle()}</head><body>
+  <div class="header">
+    <div>
+      <h1>Relatório de Cobranças Pendentes</h1>
+      <div class="header-sub">Gerado em ${now} · Base: ${S.allImports.length > 0 ? S.allImports[S.allImports.length-1].baseDate : '—'}</div>
+    </div>
+    <div class="logo">RAFIX</div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-lbl">Total em Aberto</div><div class="kpi-val red">${fmtMoneyRel(totalAberto)}</div><div class="kpi-sub">${ativos.length} títulos</div></div>
+    <div class="kpi"><div class="kpi-lbl">Vencidos</div><div class="kpi-val red">${vencidos.length}</div><div class="kpi-sub">${fmtMoneyRel(vencidos.reduce((s,r)=>s+r.vlrAberto,0))}</div></div>
+    <div class="kpi"><div class="kpi-lbl">Com Parecer</div><div class="kpi-val green">${comParecer.length}</div><div class="kpi-sub">${((comParecer.length/Math.max(ativos.length,1))*100).toFixed(0)}% contactados</div></div>
+    <div class="kpi"><div class="kpi-lbl">Sem Parecer</div><div class="kpi-val gold">${semParecer.length}</div><div class="kpi-sub">Pendentes de contato</div></div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-box">
+      <div class="chart-title">Por Tipo de Documento</div>
+      ${barChart(Object.entries(tiposMap).map(([doc,v]) => ({lbl:doc, val:v.count, display:v.count+' · '+fmtMoneyRel(v.valor)})), docColor)}
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Parecer × Sem Parecer</div>
+      ${donutLegend([
+        {lbl:'Com Parecer · '+comParecer.length+' títulos', color:'#059669', display: fmtMoneyRel(comParecer.reduce((s,r)=>s+r.vlrAberto,0))},
+        {lbl:'Sem Parecer · '+semParecer.length+' títulos', color:'#D97706', display: fmtMoneyRel(semParecer.reduce((s,r)=>s+r.vlrAberto,0))},
+        {lbl:'Vencidos · '+vencidos.length+' títulos', color:'#DC2626', display: fmtMoneyRel(vencidos.reduce((s,r)=>s+r.vlrAberto,0))},
+      ])}
+    </div>
+  </div>
+
+  <h2>Ranking por Representante</h2>
+  <table><thead><tr><th>#</th><th>Representante</th><th>Títulos</th><th>Com Parecer</th><th>Vlr Aberto</th></tr></thead><tbody>
+  ${topReps.map(([rep,v],i) => '<tr><td>'+(i+1)+'</td><td>'+rep+'</td><td>'+v.count+'</td><td>'+v.comParecer+' ('+((v.comParecer/v.count)*100).toFixed(0)+'%)</td><td>'+fmtMoneyRel(v.valor)+'</td></tr>').join('')}
+  </tbody></table>
+
+  ${reincList.length ? `<h2>Reincidentes — Aparecem em 2+ Bases</h2>
+  <table><thead><tr><th>Doc.</th><th>Título/Parc.</th><th>Cliente</th><th>Representante</th><th>Bases</th><th>Vlr Aberto</th><th>Último Parecer</th></tr></thead><tbody>
+  ${reincList.map(r => {
+    const hist = S.pareceres[rowKey(r)] || [];
+    const ult = hist.length ? hist[hist.length-1].texto : '—';
+    return '<tr>'+docBadge(r.doc)+'<td>'+r.titulo+'/'+r.parc+'</td><td>'+r.cliente+'</td><td>'+r.rep+'</td><td><strong>'+r.bases+'x</strong></td><td>'+fmtMoneyRel(r.vlrAberto)+'</td><td style="color:#64748B">'+ult+'</td></tr>';
+  }).join('')}
+  </tbody></table>` : ''}
+
+  <div class="footer">
+    <span>RAFIX · Delinear Móveis · Painel de Cobranças</span>
+    <span>Gerado em ${now}</span>
+  </div>
+  <script>window.onload=()=>window.print();<\/script>
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+// ── RELATÓRIO DE PAGOS ────────────────────────────────────────────────
+function gerarRelatorioPagos() {
+  const pagos = pagosRows(S.periodFilter);
+  const now = new Date().toLocaleString('pt-BR');
+
+  // KPIs
+  const totalPago = pagos.reduce((s,r) => s + r.vlrAberto, 0);
+  const comParecer = pagos.filter(r => (S.pareceres[rowKey(r)]||[]).length > 0);
+  const semParecer = pagos.filter(r => (S.pareceres[rowKey(r)]||[]).length === 0);
+
+  // Por tipo
+  const tiposMap = {};
+  pagos.forEach(r => {
+    if (!tiposMap[r.doc]) tiposMap[r.doc] = {count:0, valor:0};
+    tiposMap[r.doc].count++;
+    tiposMap[r.doc].valor += r.vlrAberto;
+  });
+
+  // Por representante
+  const repMap = {};
+  pagos.forEach(r => {
+    if (!repMap[r.rep]) repMap[r.rep] = {count:0, valor:0, comParecer:0};
+    repMap[r.rep].count++;
+    repMap[r.rep].valor += r.vlrAberto;
+    if ((S.pareceres[rowKey(r)]||[]).length > 0) repMap[r.rep].comParecer++;
+  });
+  const topReps = Object.entries(repMap).sort((a,b) => b[1].valor - a[1].valor).slice(0,10);
+
+  // Lista de pagos com último parecer
+  const listaPageada = pagos.slice(0, 30);
+
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Rel. Pagos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  ${buildRelStyle()}</head><body>
+  <div class="header">
+    <div>
+      <h1>Relatório de Títulos Pagos</h1>
+      <div class="header-sub">Gerado em ${now} · Período: ${S.periodFilter} dias</div>
+    </div>
+    <div class="logo">RAFIX</div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-lbl">Total Recuperado</div><div class="kpi-val green">${fmtMoneyRel(totalPago)}</div><div class="kpi-sub">${pagos.length} títulos pagos</div></div>
+    <div class="kpi"><div class="kpi-lbl">Pagos com Parecer</div><div class="kpi-val green">${comParecer.length}</div><div class="kpi-sub">${((comParecer.length/Math.max(pagos.length,1))*100).toFixed(0)}% tiveram contato</div></div>
+    <div class="kpi"><div class="kpi-lbl">Pagos sem Contato</div><div class="kpi-val gold">${semParecer.length}</div><div class="kpi-sub">Pagaram espontaneamente</div></div>
+    <div class="kpi"><div class="kpi-lbl">Efetividade</div><div class="kpi-val blue">${((comParecer.length/Math.max(pagos.length,1))*100).toFixed(0)}%</div><div class="kpi-sub">Contato → Pagamento</div></div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-box">
+      <div class="chart-title">Por Tipo de Documento</div>
+      ${barChart(Object.entries(tiposMap).map(([doc,v]) => ({lbl:doc, val:v.count, display:v.count+' · '+fmtMoneyRel(v.valor)})), docColor)}
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Com Parecer × Sem Contato</div>
+      ${donutLegend([
+        {lbl:'Pagos com contato · '+comParecer.length, color:'#059669', display: fmtMoneyRel(comParecer.reduce((s,r)=>s+r.vlrAberto,0))},
+        {lbl:'Pagos sem contato · '+semParecer.length, color:'#D97706', display: fmtMoneyRel(semParecer.reduce((s,r)=>s+r.vlrAberto,0))},
+      ])}
+    </div>
+  </div>
+
+  <h2>Ranking por Representante</h2>
+  <table><thead><tr><th>#</th><th>Representante</th><th>Títulos Pagos</th><th>Com Contato</th><th>Valor Recuperado</th></tr></thead><tbody>
+  ${topReps.map(([rep,v],i) => '<tr><td>'+(i+1)+'</td><td>'+rep+'</td><td>'+v.count+'</td><td>'+v.comParecer+' ('+((v.comParecer/v.count)*100).toFixed(0)+'%)</td><td>'+fmtMoneyRel(v.valor)+'</td></tr>').join('')}
+  </tbody></table>
+
+  <h2>Títulos Pagos — Detalhamento</h2>
+  <table><thead><tr><th>Doc.</th><th>Título/Parc.</th><th>Cliente</th><th>Representante</th><th>Vlr Título</th><th>Contato</th><th>Último Parecer</th></tr></thead><tbody>
+  ${listaPageada.map(r => {
+    const hist = S.pareceres[rowKey(r)] || [];
+    const ult = hist.length ? hist[hist.length-1].texto : '—';
+    const temContato = hist.length > 0;
+    return '<tr>'+
+      '<td>'+docBadge(r.doc)+'</td>'+
+      '<td>'+r.titulo+'/'+r.parc+'</td>'+
+      '<td>'+r.cliente+'</td>'+
+      '<td style="font-size:10px;color:#64748B">'+r.rep+'</td>'+
+      '<td>'+fmtMoneyRel(r.vlrTit)+'</td>'+
+      '<td><span class="badge '+(temContato?'b-green':'b-red')+'">'+(temContato?'Sim':'Não')+'</span></td>'+
+      '<td style="color:#64748B;max-width:200px">'+ult+'</td>'+
+    '</tr>';
+  }).join('')}
+  </tbody></table>
+
+  <div class="footer">
+    <span>RAFIX · Delinear Móveis · Painel de Cobranças</span>
+    <span>Gerado em ${now}</span>
+  </div>
+  <script>window.onload=()=>window.print();<\/script>
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+function hbarChart(containerId, items, maxVal) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const max = maxVal || Math.max(...items.map(i => i.val), 1);
+  el.innerHTML = items.map(i => {
+    const pct = (i.val / max * 100).toFixed(0);
+    return '<div class="kpi-hbar">' +
+      '<div class="kpi-hbar-lbl">' + i.lbl + '</div>' +
+      '<div class="kpi-hbar-track"><div class="kpi-hbar-fill" style="width:' + pct + '%;background:' + i.color + '"></div></div>' +
+      '<div class="kpi-hbar-val">' + i.val + (i.sub ? ' · ' + i.sub : '') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function legendChart(containerId, items) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = items.map(i =>
+    '<div class="kpi-legend">' +
+      '<div class="kpi-legend-dot" style="background:' + i.color + '"></div>' +
+      '<div class="kpi-legend-lbl">' + i.lbl + '</div>' +
+      '<div class="kpi-legend-val">' + i.val + '</div>' +
+    '</div>'
+  ).join('');
+}
+
+function kpiCard(icon_cls, icon, label, value, sub, val_cls) {
+  return card(icon_cls, icon, label, value, sub, val_cls||'');
+}
+
+function buildKpisFiltros() {
+  // Popula selects de cliente e rep
+  const allRows = todayRows();
+  const clientes = [...new Set(allRows.map(r => r.cliente).filter(Boolean))].sort();
+  const reps     = [...new Set(allRows.map(r => r.rep).filter(Boolean))].sort();
+
+  const cSel = document.getElementById('kpisClienteSel');
+  const rSel = document.getElementById('kpisRepSel');
+  if (cSel) {
+    const curC = cSel.value;
+    cSel.innerHTML = '<option value="">Todos Clientes</option>' + clientes.map(c => '<option value="'+c+'"'+(c===curC?' selected':'')+'>'+c+'</option>').join('');
+  }
+  if (rSel) {
+    const curR = rSel.value;
+    rSel.innerHTML = '<option value="">Todos Representantes</option>' + reps.map(r => '<option value="'+r+'"'+(r===curR?' selected':'')+'>'+r+'</option>').join('');
+  }
+
+  // Botões de tipo
+  const docBtns = document.getElementById('kpisDocBtns');
+  if (docBtns && !docBtns._built) {
+    docBtns._built = true;
+    docBtns._doc = 'TODOS';
+    ['TODOS','DUP','PED','ASSIST'].forEach(d => {
+      const b = document.createElement('button');
+      b.textContent = d;
+      b.className = 'filter-btn' + (d==='TODOS'?' active':'');
+      b.onclick = () => {
+        docBtns._doc = d;
+        docBtns.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        renderKpis();
+      };
+      docBtns.appendChild(b);
+    });
+  }
+}
+
+function renderKpis() {
+  buildKpisFiltros();
+
+  // Filtros internos da aba KPIs
+  const kpisDoc = document.getElementById('kpisDocBtns')?._doc || 'TODOS';
+  const kpisCli = document.getElementById('kpisClienteSel')?.value || '';
+  const kpisRep = document.getElementById('kpisRepSel')?.value || '';
+
+  // Usa todayRows para pendentes (base mais recente)
+  const ativos = todayRows().filter(r => {
+    if (r._paid) return false;
+    if (kpisDoc !== 'TODOS' && r.doc !== kpisDoc) return false;
+    if (kpisCli && r.cliente !== kpisCli) return false;
+    if (kpisRep && r.rep !== kpisRep) return false;
+    return true;
+  });
+
+  // Pagos = títulos que existiam em bases anteriores mas sumiram da mais recente
+  const latestSet = latestKeys();
+  const pagosList = [];
+  const pagosSeen = new Set();
+  [...S.allImports]
+    .sort((a,b) => (parseBR(b.baseDate)||0)-(parseBR(a.baseDate)||0))
+    .slice(1) // ignora a base mais recente
+    .forEach(imp => imp.rows.forEach(r => {
+      const k = rowKey(r);
+      if (!latestSet.has(k) && !pagosSeen.has(k)) {
+        pagosSeen.add(k);
+        // Aplica filtros
+        if (kpisDoc !== 'TODOS' && r.doc !== kpisDoc) return;
+        if (kpisCli && r.cliente !== kpisCli) return;
+        if (kpisRep && r.rep !== kpisRep) return;
+        pagosList.push({...r});
+      }
+    }));
+
+  const docColors = {DUP:'#3730A3', PED:'#C2410C', ASSIST:'#166534'};
+
+  // Data ref
+  const sorted = [...S.allImports].sort((a,b) => (parseBR(b.baseDate)||0)-(parseBR(a.baseDate)||0));
+  const lastBase = sorted.length ? sorted[0].baseDate : '—';
+  const el = document.getElementById('kpisDateRef');
+  if (el) el.textContent = 'Base atual: ' + lastBase + ' · ' + S.allImports.length + ' base' + (S.allImports.length !== 1 ? 's' : '') + ' carregada' + (S.allImports.length !== 1 ? 's' : '');
+
+  // ── PENDENTES ───────────────────────────────────────────────────────
+  const totalAberto = ativos.reduce((s,r) => s + r.vlrAberto, 0);
+  const vencidos    = ativos.filter(r => getStatus(r) === 'red');
+  // Parecer só para vencidos
+  const vencComP  = vencidos.filter(r => (S.pareceres[rowKey(r)]||[]).length > 0);
+  const vencSemP  = vencidos.filter(r => (S.pareceres[rowKey(r)]||[]).length === 0);
+
+  const pCards = document.getElementById('kpisPendentesCards');
+  if (pCards) {
+    pCards.innerHTML =
+      kpiCard('blue','💰','Total em Aberto', fmtMoney(totalAberto), ativos.length+' títulos') +
+      kpiCard('red','⚠️','Vencidos', vencidos.length, fmtMoney(vencidos.reduce((s,r)=>s+r.vlrAberto,0)), 'c-red') +
+      kpiCard('green','📝','Com Parecer', vencComP.length, fmtMoney(vencComP.reduce((s,r)=>s+r.vlrAberto,0)), 'c-green') +
+      kpiCard('yellow','🕐','Sem Parecer', vencSemP.length, fmtMoney(vencSemP.reduce((s,r)=>s+r.vlrAberto,0)), 'c-yellow');
+  }
+
+  // Gráfico tipo — todos os ativos
+  const tiposP = {};
+  ativos.forEach(r => { if(!tiposP[r.doc])tiposP[r.doc]={count:0,valor:0}; tiposP[r.doc].count++; tiposP[r.doc].valor+=r.vlrAberto; });
+  hbarChart('kpisTipoChart', Object.entries(tiposP).sort((a,b)=>b[1].count-a[1].count).map(([doc,v]) => ({
+    lbl: doc, val: v.count, sub: fmtMoney(v.valor), color: docColors[doc]||'#64748B'
+  })));
+
+  // Gráfico parecer — só vencidos, sem linha separada de vencidos
+  legendChart('kpisParecerChart', [
+    {lbl:'Com Parecer · '+vencComP.length+' títulos', color:'#059669', val: fmtMoney(vencComP.reduce((s,r)=>s+r.vlrAberto,0))},
+    {lbl:'Sem Parecer · '+vencSemP.length+' títulos', color:'#DC2626', val: fmtMoney(vencSemP.reduce((s,r)=>s+r.vlrAberto,0))},
+  ]);
+
+  // ── PAGOS (saíram da base) ──────────────────────────────────────────
+  const totalPago   = pagosList.reduce((s,r) => s + r.vlrAberto, 0);
+  const pagosComP   = pagosList.filter(r => (S.pareceres[rowKey(r)]||[]).length > 0);
+  const pagosSemP   = pagosList.filter(r => (S.pareceres[rowKey(r)]||[]).length === 0);
+  const efetividade = pagosList.length ? ((pagosComP.length/pagosList.length)*100).toFixed(0)+'%' : '—';
+
+  const gCards = document.getElementById('kpisPagosCards');
+  if (gCards) {
+    gCards.innerHTML =
+      kpiCard('green','✓','Total Recuperado', fmtMoney(totalPago), pagosList.length+' títulos', 'c-green') +
+      kpiCard('green','📞','Com Contato', pagosComP.length, fmtMoney(pagosComP.reduce((s,r)=>s+r.vlrAberto,0)), 'c-green') +
+      kpiCard('yellow','—','Sem Contato', pagosSemP.length, fmtMoney(pagosSemP.reduce((s,r)=>s+r.vlrAberto,0)), 'c-yellow') +
+      kpiCard('blue','📊','Efetividade', efetividade, 'Contato → Pagamento', 'c-blue');
+  }
+
+  // Gráfico tipo pagos
+  const tiposG = {};
+  pagosList.forEach(r => { if(!tiposG[r.doc])tiposG[r.doc]={count:0,valor:0}; tiposG[r.doc].count++; tiposG[r.doc].valor+=r.vlrAberto; });
+  hbarChart('kpisTipoPagosChart', Object.entries(tiposG).sort((a,b)=>b[1].count-a[1].count).map(([doc,v]) => ({
+    lbl: doc, val: v.count, sub: fmtMoney(v.valor), color: docColors[doc]||'#64748B'
+  })));
+
+  // Gráfico efetividade pagos
+  legendChart('kpisEfetividadeChart', [
+    {lbl:'Com contato · '+pagosComP.length, color:'#059669', val: fmtMoney(pagosComP.reduce((s,r)=>s+r.vlrAberto,0))},
+    {lbl:'Sem contato · '+pagosSemP.length, color:'#D97706', val: fmtMoney(pagosSemP.reduce((s,r)=>s+r.vlrAberto,0))},
+  ]);
+
+  // ── RANKING REPRESENTANTES ──────────────────────────────────────────
+  const repMap = {};
+  ativos.forEach(r => {
+    if (!repMap[r.rep]) repMap[r.rep] = {pend:0,vPend:0,pagos:0,vPagos:0,comP:0};
+    repMap[r.rep].pend++;
+    repMap[r.rep].vPend += r.vlrAberto;
+    if (getStatus(r)==='red' && (S.pareceres[rowKey(r)]||[]).length > 0) repMap[r.rep].comP++;
+  });
+  pagosList.forEach(r => {
+    if (!repMap[r.rep]) repMap[r.rep] = {pend:0,vPend:0,pagos:0,vPagos:0,comP:0};
+    repMap[r.rep].pagos++;
+    repMap[r.rep].vPagos += r.vlrAberto;
+  });
+  const topReps = Object.entries(repMap).sort((a,b)=>b[1].vPend-a[1].vPend).slice(0,10);
+
+  const repTbl = document.getElementById('kpisRepTable');
+  if (repTbl) {
+    repTbl.innerHTML = topReps.length
+      ? topReps.map(([rep,v],i) =>
+          '<tr><td class="rank">'+(i+1)+'</td><td class="fw6">'+esc(rep)+'</td>' +
+          '<td class="tval">'+v.pend+'</td><td class="tval" style="color:#DC2626">'+fmtMoney(v.vPend)+'</td>' +
+          '<td class="tval" style="color:#057A55">'+v.pagos+'</td><td class="tval" style="color:#057A55">'+fmtMoney(v.vPagos)+'</td>' +
+          '<td class="tval">'+(v.pend?((v.comP/v.pend)*100).toFixed(0)+'%':'—')+'</td></tr>'
+        ).join('')
+      : '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted)">Sem dados</td></tr>';
+  }
+
+  // ── RANKING CLIENTES ───────────────────────────────────────────────
+  const cliMap = {};
+  ativos.forEach(r => {
+    if (!cliMap[r.cliente]) cliMap[r.cliente] = {pend:0,vPend:0,pagos:0,vPagos:0,comP:0};
+    cliMap[r.cliente].pend++;
+    cliMap[r.cliente].vPend += r.vlrAberto;
+    if (getStatus(r)==='red' && (S.pareceres[rowKey(r)]||[]).length > 0) cliMap[r.cliente].comP++;
+  });
+  pagosList.forEach(r => {
+    if (!cliMap[r.cliente]) cliMap[r.cliente] = {pend:0,vPend:0,pagos:0,vPagos:0,comP:0};
+    cliMap[r.cliente].pagos++;
+    cliMap[r.cliente].vPagos += r.vlrAberto;
+  });
+  const topClis = Object.entries(cliMap).sort((a,b)=>b[1].vPend-a[1].vPend).slice(0,10);
+
+  const cliTbl = document.getElementById('kpisCliTable');
+  if (cliTbl) {
+    cliTbl.innerHTML = topClis.length
+      ? topClis.map(([cli,v],i) =>
+          '<tr><td class="rank">'+(i+1)+'</td><td class="fw6">'+esc(cli)+'</td>' +
+          '<td class="tval">'+v.pend+'</td><td class="tval" style="color:#DC2626">'+fmtMoney(v.vPend)+'</td>' +
+          '<td class="tval" style="color:#057A55">'+v.pagos+'</td><td class="tval" style="color:#057A55">'+fmtMoney(v.vPagos)+'</td>' +
+          '<td class="tval">'+(v.pend?((v.comP/v.pend)*100).toFixed(0)+'%':'—')+'</td></tr>'
+        ).join('')
+      : '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted)">Sem dados</td></tr>';
+  }
+}
+
 function setDoc(d)   { S.docFilter=d;    renderAll(); }
 function setStatus(s){ S.statusFilter=s; renderAll(); }
 function setPeriod(p){ S.periodFilter=p; renderAll(); }
@@ -1265,10 +1885,27 @@ function recorrBadge(n) {
 
 function switchTab(tab) {
   S.tab=tab; S.statusFilter='TODOS';
-  ['hoje','geral','pagos'].forEach(t =>
-    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',t===tab)
-  );
-  renderAll();
+  ['hoje','geral','pagos','kpis'].forEach(t => {
+    const el = document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
+    if (el) el.classList.toggle('active', t===tab);
+  });
+
+  // Mostra/esconde página de KPIs vs tabela
+  const kpisPage = document.getElementById('kpisPage');
+  if (kpisPage) kpisPage.style.display = tab === 'kpis' ? '' : 'none';
+
+  // Esconde summary e tabela na aba KPIs
+  const summaryArea = document.getElementById('summaryArea');
+  const tableContainer = document.getElementById('tableContainer');
+  const isKpis = tab === 'kpis';
+  if (summaryArea) summaryArea.style.display = isKpis ? 'none' : '';
+  if (tableContainer) tableContainer.style.display = isKpis ? 'none' : '';
+
+  if (tab === 'kpis') {
+    renderKpis();
+  } else {
+    renderAll();
+  }
 }
 
 // ══════════════════════════════════════════════════════
